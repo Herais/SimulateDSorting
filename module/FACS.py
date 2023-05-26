@@ -22,9 +22,8 @@ class Flowcytometry(object):
         """
         super(Flowcytometry, self).__init__()
 
-
-    def analyze(self, 
-                df,
+    @staticmethod
+    def analyze(df,
                 n_rounds:int=10000,
                 colname_f1:str='mCherry-A', 
                 colname_strain:str='sid',
