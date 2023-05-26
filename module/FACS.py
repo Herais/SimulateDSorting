@@ -7,8 +7,7 @@ import random
 from collections import Counter
 import matplotlib.pyplot as plt
 
-DPATH_MODULE= './module'
-os.chdir(DPATH_MODULE)
+#local libraries
 from Data import FlowData as fld
 
 class Flowcytometry(object):
