@@ -24,7 +24,7 @@ class FlowData(object):
 
 
     @staticmethod
-    def assign_abuduance(distribution:str='gamma', 
+    def generate_abuduance(distribution:str='gamma', 
                         a:int=3, 
                         scale:int=5, 
                         size:int=10):
