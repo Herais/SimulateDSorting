@@ -17,7 +17,7 @@ class FlowData(object):
         dfc = pd.concat(ls_df, axis=0)
         if ls_bin_columns:
             for colname in ls_bin_columns:
-            dfc[colname] = 1
+                dfc[colname] = 1
         dfc.columns = dfc.columns.droplevel(0)
         dfc = dfc.reset_index()
         return dfc.copy()
