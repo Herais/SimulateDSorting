@@ -51,7 +51,7 @@ class FlowData(object):
         cols = [col for col in cols if col != 'P_sampling_{}'.format(colname_strain)]
         if not strain2P:
             dftmp['P_sampling_{}'.format(colname_strain)] = dftmp['count']/dftmp['count'].sum()
-            df = [cols].merge(dftmp[[colname_strain, 'P_sampling_{}'.format(colname_strain)]],
+            df = df[cols].merge(dftmp[[colname_strain, 'P_sampling_{}'.format(colname_strain)]],
                         on=colname_strain, how='left')
             ret['strain2P'] = dict(zip(dftmp[colname_strain], dftmp['P_sampling_{}'.format(colname_strain)]))
         else:
