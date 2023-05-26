@@ -15,8 +15,8 @@ class Droplet(object):
         self.surface_area = self.calculate_surface_area(size)
 
 
-    @method
-    def calculate_volume(size:float, input_type:str='diameter'):
+    @staticmethod
+    def calculate_volume(size:float, size_type:str='diameter'):
         """
         Parameters
         ----------
@@ -37,7 +37,7 @@ class Droplet(object):
         v = 4/3*math.pi*size*size*size
         return v
 
-    @method
+    @staticmethod
     def calculate_surface_area(size:float, size_type:str='diameter'):
         """
         Parameters
@@ -59,23 +59,23 @@ class Droplet(object):
     
         return a
 
-    @method
+    @staticmethod
     def convert_um3_to_ml(x):
         return x*math.pow(10,-15+3)
 
-    @method
+    @staticmethod
     def convert_um3_to_ul(x):
         return x*math.pow(10,-15+6)
 
-    @method
+    @staticmethod
     def convert_um3_to_nl(x):
         return x*math.pow(10,-15+9)
 
-    @method
+    @staticmethod
     def convert_um3_to_pl(x):
         return x*math.pow(10,-15+12)
 
-    @method
+    @staticmethod
     def calculate_num_cell_at_saturation(size:float,
                                          size_type:str='diameter',
                                          saturation_density=math.pow(10, 10)):

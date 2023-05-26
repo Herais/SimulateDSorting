@@ -4,10 +4,10 @@ import numpy as np
 class FlowData(object):
   
     def __init__(self):
-        super(Flow_data, self).__init__()
+        super(FlowData, self).__init__()
 
     
-    @method
+    @staticmethod
     def combine_flowcytometry_records(session, ls_sampleid, ls_bin_columns=None):
         ls_df = []
         for sid in ls_sampleid:
@@ -23,19 +23,20 @@ class FlowData(object):
         return dfc.copy()
 
 
-    @method
+    @staticmethod
     def assign_abuduance(distribution:str='gamma', 
                         a:int=3, 
                         scale:int=5, 
                         size:int=10):
         
+        rng=np.random.default_rng()
         if distribution == 'gamma':
             abundances = rng.gamma(a, scale=scale, size=size)
     
         abundances = abundances/abundances.sum()
         return abundances
     
-    @method
+    @staticmethod
     def assign_sampling_probability(df, 
                               colname_strain='sid', 
                               strain2P:dict=None,
