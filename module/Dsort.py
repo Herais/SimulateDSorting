@@ -157,11 +157,11 @@ class DropletSorter(object):
                                             size=(n1, max_num_cells_at_saturation),
                                             replace=replace,
                                         )
-            dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
-            dfs['values_padded'] = dfs['indicies_padded'].apply(
-                    lambda x: [df.loc[i, colname_f1] for i in x])
-            dfs['sid'] = [combo]*dfs.shape[0]
-            ls_dfs.append(dfs.copy())
+                dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
+                dfs['values_padded'] = dfs['indicies_padded'].apply(
+                        lambda x: [df.loc[i, colname_f1] for i in x])
+                dfs['sid'] = [combo]*dfs.shape[0]
+                ls_dfs.append(dfs.copy())
 
         ret['df'] = pd.concat(ls_dfs).reset_index(drop=True)
         
