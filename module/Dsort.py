@@ -123,7 +123,7 @@ class DropletSorter(object):
         if num_cells_encapsulated == 0:
             empty_record = [[], [], ()]
             cols = ['indicies_padded', 'values_padded', 'sid']
-            ret['df'] = pd.DataFrame([empty_record]*10, columns=cols)
+            ret['df'] = pd.DataFrame([empty_record]*n_rounds, columns=cols)
             return ret
 
         # sample strain combinations captured in each droplet
@@ -146,22 +146,22 @@ class DropletSorter(object):
                 Psum = dfstrain['P_sampling_index'].sum()
                 dfstrain.loc[:, 'P_sampling_index'] /= Psum
 
-                # use sampling with replace if n > than dataset
-                replace = False
-                if n_rounds*max_num_cells_at_saturation > dfstrain.shape[0]:
-                    replace = True
+            # use sampling with replace if n > than dataset
+            replace = False
+            if n_rounds*max_num_cells_at_saturation > dfstrain.shape[0]:
+                replace = True
 
-                ls_index = list(dfstrain.index)
-                indices_in_droplets = np.random.choice(
-                                            a=ls_index,
-                                            size=(n2, max_num_cells_at_saturation),
-                                            replace=replace,
-                                        )
-                dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
-                dfs['values_padded'] = dfs['indicies_padded'].apply(
-                        lambda x: [df.loc[i, colname_f1] for i in x])
-                dfs['sid'] = [combo]*dfs.shape[0]
-                ls_dfs.append(dfs.copy())
+            ls_index = list(dfstrain.index)
+            indices_in_droplets = np.random.choice(
+                                        a=ls_index,
+                                        size=(n2, max_num_cells_at_saturation),
+                                        replace=replace,
+                                    )
+            dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
+            dfs['values_padded'] = dfs['indicies_padded'].apply(
+                    lambda x: [df.loc[i, colname_f1] for i in x])
+            dfs['sid'] = [combo]*dfs.shape[0]
+            ls_dfs.append(dfs.copy())
 
         ret['df'] = pd.concat(ls_dfs).reset_index(drop=True)
         
