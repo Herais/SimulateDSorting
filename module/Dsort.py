@@ -29,7 +29,9 @@ class DropletSorter(object):
       colname_strainP:str='P_sampling_sid',
       colname_indexP:str='P_sampling_index',
       max_num_cells_at_saturation:int=300):
-  
+        """
+        
+        """
         ret = {}
                 
         # get records for strain probabilities
