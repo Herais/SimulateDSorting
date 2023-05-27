@@ -166,3 +166,123 @@ class DropletSorter(object):
         ret['df'] = pd.concat(ls_dfs).reset_index(drop=True)
         
         return ret
+    
+    @staticmethod
+    def simsort(
+        df, 
+        n_rounds:int=10000,
+        colname_f1:str='mCherry-A',
+        colname_strain:str='sid',
+        colname_strainP:str='P_sampling_sid',
+        colname_indexP:str='P_sampling_index',
+        size_droplet=20,
+        size_type='diameter',
+        func_droplet_size=np.random.normal,
+        scale_droplet_size:float=0,
+        size_left_curve_only=False,
+        bins:int=100,
+        num_cells_encapsulated:int=1,
+        func_cells_encapsulated_per_droplet=np.random.poisson,
+        cell_encapsulation_rate:float=0.1,
+        discard_empty_droplets:bool=False,
+        rng=np.random.default_rng(),
+        figsize=(5,5)):
+
+        """
+        @param 
+        """
+  
+        ret = {}
+
+        # get records for strain probabilities
+        dftmp = df.groupby(colname_strain)[colname_strain].count().rename('count').reset_index()
+        ret['strain2count'] = dict(zip(dftmp[colname_strain], dftmp['count']))
+        if colname_strain in df.columns and colname_strainP in df.columns:
+            dftmp = df[[colname_strain, colname_strainP]].drop_duplicates()
+            ret['strain2P'] = dict(zip(dftmp[colname_strain], dftmp[colname_strainP]))
+        else:
+            tmp_ret = fld.assign_sampling_probability(df, colname_strain=colname_strain)
+            df = tmp_ret['df']
+            ret['strain2P'] = tmp_ret['strain2P']
+            ret['strain2count'] = tmp_ret['strain2count']
+        
+        if colname_indexP not in df.columns:
+            df['P_sampling_index'] = df.apply(
+                    lambda x: ret['strain2P'][x[colname_strain]]/ret['strain2count'][x[colname_strain]],
+                    axis=1)
+
+        # varying droplet_size
+        if func_droplet_size:
+            if size_left_curve_only:
+                ls_size_droplet = func_droplet_size(size_droplet, 
+                                                    size_droplet*scale_droplet_size, 
+                                                    n_rounds*3)
+                ls_size_droplet = [sz for sz in ls_size_droplet if sz <= size_droplet]
+                ls_size_droplet = ls_size_droplet[:n_rounds]
+            else:
+                ls_size_droplet = func_droplet_size(size_droplet, 
+                                                    size_droplet*scale_droplet_size, 
+                                                    n_rounds)
+            ls_num_cells_at_saturation_in_droplet = \
+                list(map(dp.calculate_num_cell_at_saturation, ls_size_droplet))
+        else:
+            ls_size_droplet = [size_droplet]*n_rounds
+            ls_num_cells_at_saturation_in_droplet  = \
+                [dp.calculate_num_cell_at_saturation(size_droplet)]*n_rounds
+        
+        # get maximum droplet_size
+        max_num_cells_at_saturation = max(ls_num_cells_at_saturation_in_droplet)
+        ret['max_num_cells_at_saturation'] = max_num_cells_at_saturation
+
+        ls_volume_droplet_t0_um3= list(map(dp.calculate_volume, ls_size_droplet))
+        ls_volume_droplet_t0_pl = list(map(dp.convert_um3_to_pl, ls_volume_droplet_t0_um3))
+
+        # varying num of encapsulated cells in each droplet
+        if func_cells_encapsulated_per_droplet:
+            a_num_cells_encapsulated = func_cells_encapsulated_per_droplet(cell_encapsulation_rate, n_rounds)
+            
+            # whether to drop empty cells
+            if discard_empty_droplets:
+                P1 = cell_encapsulation_rate*math.exp(-cell_encapsulation_rate)
+                a_num_cells_encapsulated = func_cells_encapsulated_per_droplet(
+                                                cell_encapsulation_rate, int(n_rounds/(P1/2))
+                                            )
+                a_num_cells_encapsulated = a_num_cells_encapsulated[a_num_cells_encapsulated > 0][:n_rounds]
+
+        else:
+            a_num_cells_encapsulated = np.array([num_cells_encapsulated]*n_rounds)
+
+        # get sorted droplets
+        ls_dfs = []
+
+        ret['cells_encapsulated2count'] = Counter(a_num_cells_encapsulated)
+        for num_cells_encapsulated, count in ret['cells_encapsulated2count'].items():
+        
+            tmp_ret = DropletSorter.get_droplets_encapsulated_n_cells(
+                            df=df,
+                            n_rounds=count,
+                            colname_f1=colname_f1, 
+                            colname_strain=colname_strain,
+                            colname_strainP=colname_strainP,
+                            colname_indexP=colname_indexP,
+                            num_cells_encapsulated=num_cells_encapsulated,
+                            max_num_cells_at_saturation=max_num_cells_at_saturation)
+            #print(num_cells_encapsulated, count, tmp_ret['df'].shape)
+            ls_dfs.append(tmp_ret['df'])
+
+
+        ret['df'] = pd.concat(ls_dfs, axis=0, ignore_index=True)
+        ret['df']['size_droplet'] = ls_size_droplet
+        ret['df']['v_droplet_pl_t0'] = ls_volume_droplet_t0_pl
+        ret['df']['num_cells_at_saturation_in_droplet'] = ls_num_cells_at_saturation_in_droplet
+        ret['df']['num_cells_encapsulated'] = a_num_cells_encapsulated
+        ret['df']['sum_mCherry'] = ret['df'].apply(
+            lambda x: sum(x['values_padded'][:x['num_cells_at_saturation_in_droplet']]),
+            axis=1)
+        
+        #plot histogram
+        cols=['sum_mCherry', 'size_droplet', 'num_cells_encapsulated', 'num_cells_at_saturation_in_droplet']
+        ret['fig'], ret['ax'] = plt.subplots()
+        ret['df'][cols].hist(bins=bins,figsize=figsize, ax=ret['ax'])
+
+        return ret
