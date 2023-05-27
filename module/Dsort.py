@@ -128,35 +128,35 @@ class DropletSorter(object):
 
         # sample strain combinations captured in each droplet
         ls_Series = []
+        ls_dfs = []
         for rs in range(num_cells_encapsulated):
             df_sampled = df.sample(n=n_rounds, weights=df['P_sampling_index'])
             ls_Series.append(df_sampled[colname_strain].to_list())
-        S_strains = pd.DataFrame(ls_Series).apply(','.join).apply(lambda x: x.split(','))
-        S_strains = S_strains.apply(sorted).apply(tuple)
-        strainscombo2count = Counter(S_strains)
+            S_strains = pd.DataFrame(ls_Series).apply(','.join).apply(lambda x: x.split(','))
+            S_strains = S_strains.apply(sorted).apply(tuple)
+            strainscombo2count = Counter(S_strains)
 
-        # sample cells in each droplet
-        ls_dfs = []
-        for combo, n1 in strainscombo2count.items():
-            strain2count = Counter(combo)
-            dfstrain = df[df[colname_strain].isin(combo)].copy()
+            # sample cells in each droplet
+            for combo, n1 in strainscombo2count.items():
+                strain2count = Counter(combo)
+                dfstrain = df[df[colname_strain].isin(combo)].copy()
 
-            for strain, n2 in strain2count.items():
-                dfstrain.loc[dfstrain[colname_strain] == strain, 'P_sampling_index']*=n2
-                Psum = dfstrain['P_sampling_index'].sum()
-                dfstrain.loc[:, 'P_sampling_index'] /= Psum
+                for strain, n2 in strain2count.items():
+                    dfstrain.loc[dfstrain[colname_strain] == strain, 'P_sampling_index']*=n2
+                    Psum = dfstrain['P_sampling_index'].sum()
+                    dfstrain.loc[:, 'P_sampling_index'] /= Psum
 
-            # use sampling with replace if n > than dataset
-            replace = False
-            if n_rounds*max_num_cells_at_saturation > dfstrain.shape[0]:
-                replace = True
+                # use sampling with replace if n > than dataset
+                replace = False
+                if n1*max_num_cells_at_saturation > dfstrain.shape[0]:
+                    replace = True
 
-            ls_index = list(dfstrain.index)
-            indices_in_droplets = np.random.choice(
-                                        a=ls_index,
-                                        size=(n2, max_num_cells_at_saturation),
-                                        replace=replace,
-                                    )
+                ls_index = list(dfstrain.index)
+                indices_in_droplets = np.random.choice(
+                                            a=ls_index,
+                                            size=(n1, max_num_cells_at_saturation),
+                                            replace=replace,
+                                        )
             dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
             dfs['values_padded'] = dfs['indicies_padded'].apply(
                     lambda x: [df.loc[i, colname_f1] for i in x])
