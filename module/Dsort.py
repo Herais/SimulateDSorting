@@ -154,7 +154,7 @@ class DropletSorter(object):
                 ls_index = list(dfstrain.index)
                 indices_in_droplets = np.random.choice(
                                             a=ls_index,
-                                            size=(n1, max_num_cells_at_saturation),
+                                            size=(n2, max_num_cells_at_saturation),
                                             replace=replace,
                                         )
                 dfs = pd.Series(list(indices_in_droplets)).to_frame('indicies_padded')
