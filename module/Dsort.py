@@ -53,7 +53,7 @@ class DropletSorter(object):
                     axis=1)
 
         # Sample strain for each round
-        df_sampled= dfc_wz.sample(n=n_rounds, weights=dfc_wz['P_sampling_index'])
+        df_sampled= df.sample(n=n_rounds, weights=df['P_sampling_index'])
         df_sampled_count = df_sampled.groupby('sid')['sid'].count().rename('count').reset_index()
         ret['strain2n'] = dict(zip(df_sampled_count['sid'], df_sampled_count['count']))
 
@@ -129,7 +129,7 @@ class DropletSorter(object):
         # sample strain combinations captured in each droplet
         ls_Series = []
         for rs in range(num_cells_encapsulated):
-            df_sampled = dfc_wz.sample(n=n_rounds, weights=dfc_wz['P_sampling_index'])
+            df_sampled = df.sample(n=n_rounds, weights=df['P_sampling_index'])
             ls_Series.append(df_sampled[colname_strain].to_list())
         S_strains = pd.DataFrame(ls_Series).apply(','.join).apply(lambda x: x.split(','))
         S_strains = S_strains.apply(sorted).apply(tuple)
@@ -138,7 +138,7 @@ class DropletSorter(object):
         # sample cells in each droplet
         ls_dfs = []
         for combo, n1 in strainscombo2count.items():
-            strain2count = Counter(k)
+            strain2count = Counter(combo)
             dfstrain = df[df[colname_strain].isin(combo)].copy()
 
             for strain, n2 in strain2count.items():
