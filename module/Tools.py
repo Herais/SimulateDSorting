@@ -87,8 +87,6 @@ class Droplet(object):
         d_droplet: radius of the droplet in um
         sat_cell: saturation density of the cell, default 10^10 cells/ml
         """
-        if size_type == 'diameter':
-            size = size / 2
 
         V= Droplet.calculate_volume(size, size_type=size_type)
         V = Droplet.convert_um3_to_ml(V)
