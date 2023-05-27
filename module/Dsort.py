@@ -22,14 +22,15 @@ class DropletSorter(object):
     
     @staticmethod
     def get_droplets_encapsulated_a_cell(
-      df, 
-      n_rounds= 10000, 
-      colname_f1:str='mCherry-A', 
-      colname_strain:str='sid',
-      colname_strainP:str='P_sampling_sid',
-      colname_indexP:str='P_sampling_index',
-      max_num_cells_at_saturation:int=300):
+        df, 
+        n_rounds:int=10000, 
+        colname_f1:str='mCherry-A', 
+        colname_strain:str='sid',
+        colname_strainP:str='P_sampling_sid',
+        colname_indexP:str='P_sampling_index',
+        max_num_cells_at_saturation:int=300):
         """
+        @param
         
         """
         ret = {}
@@ -86,19 +87,19 @@ class DropletSorter(object):
     
     @staticmethod
     def get_droplets_encapsulated_n_cells(
-                df,
-                n_rounds=10000,
-                colname_f1:str='mCherry-A', 
-                colname_strain:str='sid',
-                colname_strainP:str='P_sampling_sid',
-                colname_indexP:str='P_sampling_index',
-                num_cells_encapsulated=0,
-                max_num_cells_at_saturation:int=300):
+            df,
+            n_rounds=10000,
+            colname_f1:str='mCherry-A', 
+            colname_strain:str='sid',
+            colname_strainP:str='P_sampling_sid',
+            colname_indexP:str='P_sampling_index',
+            num_cells_encapsulated=1,
+            max_num_cells_at_saturation:int=300):
         """
         """
   
 
-        assert num_cells_encapsulated > 0, print('num_cells_encapsulated shall be an positive interger')
+        assert num_cells_encapsulated >= 0, print('num_cells_encapsulated shall be an positive interger')
 
         ret = {}
 
@@ -118,7 +119,13 @@ class DropletSorter(object):
             df['P_sampling_index'] = df.apply(
                     lambda x: ret['strain2P'][x[colname_strain]]/ret['strain2count'][x[colname_strain]],
                     axis=1)
-            
+
+        if num_cells_encapsulated == 0:
+            empty_record = [[], [], ()]
+            cols = ['indicies_padded', 'values_padded', 'sid']
+            ret['df'] = pd.DataFrame([empty_record]*10, columns=cols)
+            return ret
+
         # sample strain combinations captured in each droplet
         ls_Series = []
         for rs in range(num_cells_encapsulated):
