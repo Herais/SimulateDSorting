@@ -189,6 +189,7 @@ class DropletSorter(object):
         func_cells_encapsulated_per_droplet=np.random.poisson,
         cell_encapsulation_rate:float=0.1,
         discard_empty_droplets:bool=False,
+        pct_no_growth:float=0,
         rng=np.random.default_rng(),
         figsize=(5,5)):
 
@@ -291,12 +292,64 @@ class DropletSorter(object):
             axis=1)
         
         #plot histogram
-        cols=['sum_mCherry', 'size_droplet', 'num_cells_encapsulated', 'num_cells_at_saturation_in_droplet']
-        ret['fig'], ret['ax'] = plt.subplots()
-        ret['df'][cols].hist(bins=bins,figsize=figsize, ax=ret['ax'])
+        cols_to_plot=['sum_mCherry', 'sum_mCherry', 'size_droplet', 'num_cells_encapsulated', 'num_cells_at_saturation_in_droplet']
+
+        logicle_xform = fk.transforms.LogicleTransform('logicle', param_t=262144, param_w=0.5, param_m=4.5, param_a=0)
+        xform_funcs = [None, logicle_xform, None, None, None]
+        ret['fig'], ret['ax'] = DropletSorter.plot_histogram_dsorter(
+            df=ret['df'],
+            cols_to_plot=cols_to_plot,
+            xform_funcs=xform_funcs,
+            ncols=None,
+            figsize=None,
+            )
 
         return ret
+    
+    @staticmethod
+    def plot_histogram_dsorter(
+        df,
+        cols_to_plot=['mCherry-A'],
+        xform_funcs=None,
+        ls_bins=None,
+        ncols=None,
+        figsize=None):
 
+        if not xform_funcs:
+            xform_funcs = [None]*len(cols_to_plot)
+        
+        if not ls_bins:
+            ls_bins = [None]*len(cols_to_plot)
+
+        if not ncols:
+            ncols = len(cols_to_plot)
+        
+        if not figsize:
+            figsize = (4*ncols,3)
+        
+        fig, axes = plt.subplots(nrows=math.ceil(len(cols)/ncols), ncols=ncols)
+        fig.set_figwidth(figsize[0])
+        fig.set_figheight(figsize[1])
+        n_ax = len(axes)
+        i_ax = 0
+
+
+        cols_xform = []
+        for col, xform_func, bins in zip(cols_to_plot, xform_funcs, ls_bins):
+            if xform_func:
+                df['{}_xform'.format(col)] = xform_func.apply(df[col])
+                cols_xform.append('{}_xform'.format(col))
+                df['{}_xform'.format(col)].hist(bins=bins, ax=axes[i_ax])
+                axes[i_ax].set_title('{}_xform'.format(col), fontsize=8)
+            else:
+                df[col].hist(bins=bins, ax=axes[i_ax])
+                axes[i_ax].set_title(col, fontsize=8)
+                i_ax+=1
+            
+        plt.show()
+
+        return fig, axes
+    
     @staticmethod
     def merge_droplets(
         df_droplets, 
