@@ -3,6 +3,7 @@ import numpy as np
 from collections import Counter
 import itertools
 from scipy.signal import find_peaks
+import matplotlib.pyplot as plt
 
 class FlowData(object):
   
