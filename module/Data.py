@@ -119,8 +119,10 @@ class FlowData(object):
             strain2count = FlowData.get_strain_counts_in_gate(df, peak_x, colname_f1=colname_f1, width=width)
             record['num_strains'] = len(strain2count)
             record['counter_strains'] = strain2count
+            record['num_events'] = sum(strain2count.values())
 
-            print('peak_x: {}, width: {}, # strains present: {}'.format(peak_x, width, len(strain2count)))
+            print('peak_x: {}, width: {}, # strains present: {}, # events: {}'.format(
+                peak_x, width, len(strain2count), record['num_events']))
             ls.append(record)
 
         ret['fig'] = plt.plot(bin_edges, hist)
