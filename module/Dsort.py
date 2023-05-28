@@ -120,16 +120,16 @@ class DropletSorter(object):
             df['P_sampling_index'] = df.apply(
                     lambda x: ret['strain2P'][x[colname_strain]]/ret['strain2count'][x[colname_strain]],
                     axis=1)
-
-        if num_cells_encapsulated == 0:
-            empty_record = [[], [], ()]
-            cols = ['indicies_padded', 'values_padded', 'sid']
-            ret['df'] = pd.DataFrame([empty_record]*n_rounds, columns=cols)
-            return ret
-
+        
         # sample strain combinations captured in each droplet
         ls_Series = []
         ls_dfs = []
+        if num_cells_encapsulated == 0:
+            empty_record = [[], [], ()]
+            cols = ['indicies_padded', 'values_padded', 'sid']
+            dfs = pd.DataFrame([empty_record]*n_rounds, columns=cols)
+            ls_dfs.append(dfs)
+
         for rs in range(num_cells_encapsulated):
             df_sampled = df.sample(n=n_rounds, weights=df['P_sampling_index'])
             ls_Series.append(df_sampled[colname_strain].to_list())
