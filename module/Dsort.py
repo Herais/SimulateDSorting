@@ -129,6 +129,7 @@ class DropletSorter(object):
             cols = ['indicies_padded', 'values_padded', 'sid']
             dfs = pd.DataFrame([empty_record]*n_rounds, columns=cols)
             ls_dfs.append(dfs)
+            strainscombo2count = Counter({():n_rounds})
 
         for rs in range(num_cells_encapsulated):
             df_sampled = df.sample(n=n_rounds, weights=df['P_sampling_index'])
