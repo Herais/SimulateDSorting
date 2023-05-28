@@ -6,6 +6,7 @@ import pandas as pd
 import random
 from collections import Counter
 import matplotlib.pyplot as plt
+import itertools
 
 #local libraries
 from Data import FlowData as fld
@@ -286,3 +287,22 @@ class DropletSorter(object):
         ret['df'][cols].hist(bins=bins,figsize=figsize, ax=ret['ax'])
 
         return ret
+
+        @staticmethod
+        def merge_droplets(
+            df_droplets, 
+            df_original,
+            colname_f1='mCherry-A',
+            colname_strain='sid'):
+        
+            ret = {}
+
+            S_indicies = df_droplets.apply(
+                lambda x: x['indicies_padded'][:x['num_cells_at_saturation_in_droplet']], 
+                axis=1)
+            indicies = list(itertools.chain(*S_indicies))
+            df = pd.DataFrame(indicies, columns=['idx'])
+            df[colname_f1] = df['idx'].apply(lambda x: df_original.loc[x, colname_f1])
+            df[colname_strain] = df['idx'].apply(lambda x: df_original.loc[x, colname_strain])
+
+            return df.copy()
