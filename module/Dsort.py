@@ -140,6 +140,7 @@ class DropletSorter(object):
 
         # sample cells in each droplet
         for combo, n1 in strainscombo2count.items():
+            if combo == (): break
             strain2count = Counter(combo)
             dfstrain = df[df[colname_strain].isin(combo)].copy()
 
