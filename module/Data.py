@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import itertools
+from scipy.signal import find_peaks
 
 class FlowData(object):
   
@@ -83,5 +84,48 @@ class FlowData(object):
             ret = Counter(list(itertools.chain(strains)))
         elif type(df[colname_strain].iloc[0]) is tuple:
             ret = Counter(list(itertools.chain(*strains)))
+
+        return ret
+    
+    @staticmethod
+    def identify_strains_at_peaks(
+        df,
+        colname_f1:str='mCherry-A',
+        pct_width:float=0.01,
+        bins:int=100,
+        distance:float=10,
+        height:float=250,
+        pct_upper_peak:float=0.98):
+
+        ret = {}
+        width = (df[colname_f1].max() - df[colname_f1].min())*pct_width
+
+        hist, bin_edges = np.histogram(df[colname_f1].to_numpy(), bins=bins)
+        peaks, peak_heights = find_peaks(hist, distance=distance, height=height)
+        bin_edges = bin_edges[1:]
+        arr_peak_x = bin_edges[peaks]
+    
+        ret['peak_heights'] = peak_heights
+        ret['peaks_x'] = arr_peak_x
+
+        arr_peak_x = np.append(arr_peak_x, df[colname_f1].max()*pct_upper_peak)
+
+        ls = []
+        for peak_x in arr_peak_x:
+            record = {}
+            record['peak_x'] = peak_x
+            record['width'] = width
+            strain2count = FlowData.get_strain_counts_in_gate(df, peak_x, colname_f1=colname_f1, width=width)
+            record['num_strains'] = len(strain2count)
+            record['counter_strains'] = strain2count
+
+            print('peak_x: {}, width: {}, # strains present: {}'.format(peak_x, width, len(strain2count)))
+            ls.append(record)
+
+        ret['fig'] = plt.plot(bin_edges, hist)
+        plt.plot(bin_edges[peaks], hist[peaks], "x")
+        plt.show()
+        
+        ret['df'] = pd.DataFrame(ls)
 
         return ret
