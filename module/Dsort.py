@@ -172,7 +172,7 @@ class DropletSorter(object):
         return ret
     
     @staticmethod
-    def simsort(
+    def culture_sort(
         df, 
         n_rounds:int=10000,
         colname_f1:str='mCherry-A',
