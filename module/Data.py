@@ -12,10 +12,15 @@ class FlowData(object):
 
     
     @staticmethod
-    def combine_flowcytometry_records(session, ls_sampleid, ls_bin_columns=None):
+    def combine_flowcytometry_records(
+        session, 
+        ls_sampleid, 
+        ls_bin_columns=None, 
+        source='raw'):
+        
         ls_df = []
         for sid in ls_sampleid:
-            df = session.get_sample(sid).as_dataframe()
+            df = session.get_sample(sid).as_dataframe(source=source)
             df[('sid', 'sid')] = sid
             ls_df.append(df)
         dfc = pd.concat(ls_df, axis=0)
