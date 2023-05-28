@@ -292,10 +292,10 @@ class DropletSorter(object):
             axis=1)
         
         #plot histogram
-        cols_to_plot=['sum_mCherry', 'sum_mCherry', 'size_droplet', 'num_cells_encapsulated', 'num_cells_at_saturation_in_droplet']
-
+        cols_to_plot=[colname_f1, colname_f1, 'size_droplet', 'num_cells_encapsulated', 'num_cells_at_saturation_in_droplet']
         logicle_xform = fk.transforms.LogicleTransform('logicle', param_t=262144, param_w=0.5, param_m=4.5, param_a=0)
         xform_funcs = [None, logicle_xform, None, None, None]
+
         ret['fig'], ret['ax'] = DropletSorter.plot_histogram_dsorter(
             df=ret['df'],
             cols_to_plot=cols_to_plot,
