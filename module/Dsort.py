@@ -279,7 +279,7 @@ class DropletSorter(object):
         ret['df']['size_droplet'] = ls_size_droplet
         ret['df']['v_droplet_pl_t0'] = ls_volume_droplet_t0_pl
 
-        #ret['df']['num_cells_encapsulated'] = a_num_cells_encapsulated
+        #set empty droplets reflect no cell growth
         ret['df']['num_cells_at_saturation_in_droplet'] = ls_num_cells_at_saturation_in_droplet
         ret['df']['num_cells_at_saturation_in_droplet'] = ret['df'].apply(lambda x:
             0 if x['num_cells_encapsulated'] == 0 else x['num_cells_at_saturation_in_droplet'],
