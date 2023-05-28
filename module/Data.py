@@ -66,3 +66,20 @@ class FlowData(object):
         ret['df'] = df.copy()
 
         return ret
+    
+    @staticmethod
+    def get_strain_counts_in_gate(
+        df,
+        peak_x:float, 
+        colname_f1:str='mCherry-A',
+        colname_strain:str='sid',
+        width=10):
+  
+        strains = df[(df[colname_f1] > peak_x - width/2) & (df[colname_f1] > peak_x + width/2)][colname_strain]
+
+        if type(df[colname_strain].iloc[0]) is str:
+            ret = Counter(list(itertools.chain(strains)))
+        elif type(df[colname_strain].iloc[0]) is tuple:
+            ret = Counter(list(itertools.chain(*strains)))
+
+        return ret
