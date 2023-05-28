@@ -191,7 +191,7 @@ class DropletSorter(object):
         discard_empty_droplets:bool=False,
         pct_no_growth:float=0,
         rng=np.random.default_rng(),
-        figsize=(5,5)):
+        figsize=None):
 
         """
         @param 
@@ -301,7 +301,7 @@ class DropletSorter(object):
             cols_to_plot=cols_to_plot,
             xform_funcs=xform_funcs,
             ncols=None,
-            figsize=None,
+            figsize=figsize,
             )
 
         return ret
@@ -327,7 +327,7 @@ class DropletSorter(object):
         if not figsize:
             figsize = (4*ncols,3)
         
-        fig, axes = plt.subplots(nrows=math.ceil(len(cols)/ncols), ncols=ncols)
+        fig, axes = plt.subplots(nrows=math.ceil(len(cols_to_plot)/ncols), ncols=ncols)
         fig.set_figwidth(figsize[0])
         fig.set_figheight(figsize[1])
         n_ax = len(axes)
