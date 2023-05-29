@@ -339,7 +339,6 @@ class DropletSorter(object):
         for col, xform_func, bins in zip(cols_to_plot, xform_funcs, ls_bins):
             if xform_func:
                 df['{}_xform'.format(col)] = xform_func.apply(df[col])
-                print('{}_xform'.format(col))
                 cols_xform.append('{}_xform'.format(col))
                 df['{}_xform'.format(col)].hist(bins=bins, ax=axes[i_ax])
                 axes[i_ax].set_title('{}_xform'.format(col), fontsize=8)
@@ -347,7 +346,7 @@ class DropletSorter(object):
                 df[col].hist(bins=bins, ax=axes[i_ax])
                 cols_xform.append(col)
                 axes[i_ax].set_title(col, fontsize=8)
-                i_ax+=1
+            i_ax+=1
             
         plt.show()
 
