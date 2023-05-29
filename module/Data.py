@@ -129,7 +129,7 @@ class FlowData(object):
             ls.append(record)
         
         record = {}
-        v_at_quantile = df[colname_f1].quantile(q=quantile)
+        v_at_quantile = df[colname_f1].quantile(q=above_quantile)
         dfq = df[df[colname_f1] > v_at_quantile]
         record['v_at_quantile'] = v_at_quantile
         record['width'] = dfq[colname_f1].max() - v_at_quantile
