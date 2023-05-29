@@ -101,7 +101,7 @@ class FlowData(object):
         bins:int=100,
         distance:float=10,
         height:float=250,
-        pct_upper_peak:float=0.98):
+        above_quantile:float=0.99):
 
         ret = {}
         width = (df[colname_f1].max() - df[colname_f1].min())*pct_width
@@ -113,8 +113,6 @@ class FlowData(object):
     
         ret['peak_heights'] = peak_heights
         ret['peaks_x'] = arr_peak_x
-
-        arr_peak_x = np.append(arr_peak_x, df[colname_f1].max()*pct_upper_peak)
 
         ls = []
         for peak_x in arr_peak_x:
@@ -129,6 +127,18 @@ class FlowData(object):
             print('peak_x: {}, width: {}, # strains present: {}, # events: {}'.format(
                 peak_x, width, len(strain2count), record['num_events']))
             ls.append(record)
+        
+        record = {}
+        v_at_quantile = df[colname_f1].quantile(q=quantile)
+        dfq = df[df[colname_f1] > v_at_quantile]
+        record['v_at_quantile'] = v_at_quantile
+        record['width'] = dfq[colname_f1].max() - v_at_quantile
+        record['counter_strains'] = Counter(list(itertools.chain(*dfq)))
+        record['num_strains'] = len(strain2count)
+        record['num_events'] = sum(strain2count.values())
+        print('quantile {}: {}, width: {}, # strains present: {}, # events: {}'.format(above_quantile, 
+                v_at_quantile, width, len(strain2count), record['num_events']))
+        
 
         ret['fig'] = plt.plot(bin_edges, hist)
         plt.plot(bin_edges[peaks], hist[peaks], "x")
