@@ -131,13 +131,13 @@ class FlowData(object):
         
         record = {}
         v_at_quantile = df[colname_f1].quantile(q=above_quantile)
-        
+
         strains = df[df[colname_f1] > v_at_quantile][colname_strain]
         record['v_at_quantile'] = v_at_quantile
-        record['width'] = dfq[colname_f1].max() - v_at_quantile
-        if type(dfq[colname_strain].iloc[0]) is str:
+        record['width'] = df[colname_f1].max() - v_at_quantile
+        if type(df[colname_strain].iloc[0]) is str:
             strain2count = Counter(list(itertools.chain(strains)))
-        elif type(dfq[colname_strain].iloc[0]) is tuple:
+        elif type(df[colname_strain].iloc[0]) is tuple:
             strain2count = Counter(list(itertools.chain(*strains)))
 
         record['counter_strains'] = strain2count
