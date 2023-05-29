@@ -133,7 +133,8 @@ class FlowData(object):
         dfq = df[df[colname_f1] > v_at_quantile]
         record['v_at_quantile'] = v_at_quantile
         record['width'] = dfq[colname_f1].max() - v_at_quantile
-        record['counter_strains'] = Counter(list(itertools.chain(*dfq)))
+        starin2count = Counter(list(itertools.chain(*dfq)))
+        record['counter_strains'] = starin2count 
         record['num_strains'] = len(strain2count)
         record['num_events'] = sum(strain2count.values())
         print('quantile {}: {}, width: {}, # strains present: {}, # events: {}'.format(above_quantile, 
