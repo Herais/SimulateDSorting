@@ -129,11 +129,13 @@ class FlowData(object):
                 peak_x, width, len(strain2count), record['num_events']))
             ls.append(record)
         
+        # get all events above the specified quantile.
         record = {}
         v_at_quantile = df[colname_f1].quantile(q=above_quantile)
 
         strains = df[df[colname_f1] > v_at_quantile][colname_strain]
         record['v_at_quantile'] = v_at_quantile
+
         record['width'] = df[colname_f1].max() - v_at_quantile
         if type(df[colname_strain].iloc[0]) is str:
             strain2count = Counter(list(itertools.chain(strains)))
@@ -143,6 +145,7 @@ class FlowData(object):
         record['counter_strains'] = strain2count
         record['num_strains'] = len(strain2count)
         record['num_events'] = sum(strain2count.values())
+        ls.append(record)
         print('quantile {}: {}, width: {}, # strains present: {}, # events: {}'.format(above_quantile, 
                 v_at_quantile, record['width'], len(strain2count), record['num_events']))
         
