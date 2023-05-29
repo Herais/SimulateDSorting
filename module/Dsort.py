@@ -302,7 +302,7 @@ class DropletSorter(object):
             cols_to_plot=cols_to_plot,
             xform_funcs=xform_funcs,
             ncols=None,
-            ls_bins=ls_bins
+            ls_bins=ls_bins,
             figsize=figsize,
             )
 
