@@ -333,7 +333,6 @@ class DropletSorter(object):
         fig, axes = plt.subplots(nrows=math.ceil(len(cols_to_plot)/ncols), ncols=ncols)
         fig.set_figwidth(figsize[0])
         fig.set_figheight(figsize[1])
-        n_ax = len(axes)
         i_ax = 0
 
 
