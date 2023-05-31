@@ -1,4 +1,7 @@
 import math
+import torch
+import numpy as np
+import pandas as pd
 
 class Droplet(object):
  
@@ -110,3 +113,22 @@ class Droplet(object):
         n_droplets = int(V_i/volume_avg_droplet_ul*efficiency)
 
         return n_droplets
+
+    @staticmethod
+    def generate_droplets_with_variable_sizes(
+        n_droplets=100000,
+        size_droplet:float=20., #um
+        size_type:str='diameter',
+        func_droplet_size=torch.normal,
+        std_droplet_size=0.1)->torch.tensor:
+    
+        ret = {}
+        if func_droplet_size:
+            sizes_droplet = torch.normal(
+                mean=size_droplet, 
+                std=torch.arange(std_droplet_size, n_droplets),
+                )
+        else:
+            sizes_droplet = torch.tensor([size_droplet]*n_droplets)
+        
+        return sizes_droplet
