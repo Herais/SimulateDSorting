@@ -27,7 +27,12 @@ class DNA(object):
         """
         Sample usage
         ---
-        
+        size=100,
+        p=(0.25,0.25,0.25,0.25) # ATCG
+        generate_random_dna_sequence(
+            size=size,
+            p=p
+        )
         """
 
         seq = np.random.choice(
