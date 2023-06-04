@@ -58,7 +58,7 @@ class PCR(object):
 
     
     @staticmethod
-    def approximate_num_nt_from_dntp_mM(
+    def approximate_dntp_count_from_dntp_mM(
         dnTP_mM,
         volume_microliter,
         molecular_weight_dATP:float=491.2,
@@ -94,7 +94,7 @@ class PCR(object):
         return(num_dnTP)
     
     @staticmethod
-    def approximate_num_nt_from_dna_ng(
+    def approximate_nt_count_from_dna_ng(
         dna_ng,
         fragment_size_avg:int=550, #bp
         library_type:str='dsDNA',
@@ -123,7 +123,7 @@ class PCR(object):
         dna_ng=500
         fragment_size_avg=550 #bp
         library_type='ssDNA'
-        approximate_num_nt_from_dna_ng(
+        approximate_nt_count_from_dna_ng(
             dna_ng=dna_ng,
             fragment_size_avg=fragment_size_avg,
             library_type=library_type,
