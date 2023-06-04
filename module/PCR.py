@@ -81,7 +81,7 @@ class PCR(object):
         ----
         dnTP_mM=0.2
         volume_microliter=50
-        approximate_num_nt_from_dntp_mM(
+        approximate_dntp_count_from_dntp_mM(
             dnTP_mM=dnTP_mM, 
             volume_microliter=volume_microliter
         )
