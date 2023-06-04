@@ -54,3 +54,40 @@ class PCR(object):
             Counter_ATCG_available = Counter(Counter_ATCG_available)
 
         return Counter_ATCG_available
+
+    
+    @staticmethodmethod
+    def approximate_num_nt_from_dntp_mM(
+        dnTP_mM,
+        volume_microliter,
+        molecular_weight_dATP:float=491.2,
+        molecular_weight_dCTP:float=467.2,
+        molecular_weight_dGTP:float=507.2,
+        molecular_weight_dTTP:float=482.2,
+        molecular_weight_dnTP:float=487.,
+        )->float:
+
+        """
+        Default settings
+        ----
+        molecular_weight_dATP=491.2,
+        molecular_weight_dCTP=467.2,
+        molecular_weight_dGTP=507.2,
+        molecular_weight_dTTP=482.2,
+        molecular_weight_dnTP=487,
+
+        Sample usage
+        ----
+        dnTP_mM=0.2
+        volume_microliter=50
+        approximate_num_nt_from_dntp_mM(
+        dnTP_mM=dnTP_mM, 
+        volume_microliter=volume_microliter
+        )
+
+        """
+        dnTP_mmole_per_liter = dnTP_mM
+        dnTP_mmole = dnTP_mmole_per_liter*volume_microliter*10e-6
+        num_dnTP = dnTP_mmole * 10e-6 * scipy.constants.Avogadro
+
+        return(num_dnTP)
