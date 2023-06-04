@@ -56,7 +56,7 @@ class PCR(object):
         return Counter_ATCG_available
 
     
-    @staticmethodmethod
+    @staticmethod
     def approximate_num_nt_from_dntp_mM(
         dnTP_mM,
         volume_microliter,
