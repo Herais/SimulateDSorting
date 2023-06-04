@@ -165,3 +165,41 @@ class Droplet(object):
         n_droplets = int(V_i/volume_avg_droplet_ul*efficiency_encapsulation)
 
         return n_droplets
+    
+    @staticmethod
+    def generate_droplets_with_variable_size(
+        n_droplets:int=100000,
+        size_droplet:float=20., #um
+        size_type:str='diameter',
+        func_droplet_size=torch.normal,
+        std_droplet_size:float=0.1,
+        return_numpy:bool=False,
+    )->torch.tensor:
+        """
+        Sample Usage
+        ----
+        n_droplets=100000
+        size_droplet=20. #um
+        size_type='diameter'
+        func_droplet_size=torch.normal
+        std_droplet_size=0.1
+
+        generate_droplets_with_variable_size(
+            n_droplets=n_droplets,
+            size_droplet=size_droplet,
+            size_type=size_type,
+            func_droplet_size=func_droplet_size,
+            std_droplet_size=std_droplet_size
+        )
+
+        """
+        ret = {}
+        if func_droplet_size:
+            sizes_droplet = torch.normal(
+                mean=size_droplet, 
+                std=torch.arange(std_droplet_size, n_droplets),
+                )
+        else:
+            sizes_droplet = torch.tensor([size_droplet]*n_droplets)
+        
+        return sizes_droplet
