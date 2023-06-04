@@ -132,3 +132,36 @@ class Droplet(object):
             sizes_droplet = torch.tensor([size_droplet]*n_droplets)
         
         return sizes_droplet
+
+    @staticmethod
+    def calculate_n_droplets_from_bulk(
+        V_i:float=500, #ul
+        size_droplet:float=20, #um
+        efficiency_encapsulation:float=0.8,
+        size_type:str='diameter'
+    )->int:
+
+        """
+        Sample Usage
+        ----
+        V_i=500 #ul
+        size_droplet=20 #um
+        efficiency_encapsulation=0.8
+        size_type='diameter'
+
+        calculate_n_droplets_from_bulk(
+            V_i=V_i,
+            size_droplet=size_droplet,
+            efficiency_encapsulation=efficiency_encapsulation,
+            size_type=size_type,
+        )
+        """
+
+        volume_avg_droplet_um3 = dp.calculate_volume(
+                                    size=size_droplet,
+                                    size_type=size_type)
+
+        volume_avg_droplet_ul = dp.convert_um3_to_ul(volume_avg_droplet_um3)
+        n_droplets = int(V_i/volume_avg_droplet_ul*efficiency_encapsulation)
+
+        return n_droplets
