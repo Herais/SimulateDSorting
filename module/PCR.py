@@ -1,5 +1,6 @@
 import os
 import math
+import scipy
 import flowkit as fk
 import numpy as np
 import pandas as pd
@@ -91,3 +92,52 @@ class PCR(object):
         num_dnTP = dnTP_mmole * 10e-6 * scipy.constants.Avogadro
 
         return(num_dnTP)
+    
+    @staticmethod
+    def approximate_num_nt_from_dna_ng(
+        dna_ng,
+        fragment_size_avg:int=550, #bp
+        library_type:str='dsDNA',
+        molecular_weight_dAMP:float=331.2,
+        molecular_weight_dCMP:float=307.2,
+        molecular_weight_dGMP:float=347.2,
+        molecular_weight_dTMP:float=322.2,
+        molecular_weight_dnMP:float=339.5,
+        molecular_weight_ssDNAends:float=79.,
+        molecular_weight_dsDNAends:float=157.9
+        )->float:
+
+        """
+        Default settings
+        ----
+        molecular_weight_dAMP=331.2,
+        molecular_weight_dCMP=307.2,
+        molecular_weight_dGMP=347.2,
+        molecular_weight_dTMP=322.2,
+        molecular_weight_dnMP=339.5,
+        molecular_weight_ssDNAends=79,
+        molecular_weight_dsDNAends=157.9
+
+        Sample usage
+        ----
+        dna_ng=500
+        fragment_size_avg=550 #bp
+        library_type='ssDNA'
+        approximate_num_nt_from_dna_ng(
+            dna_ng=dna_ng,
+            fragment_size_avg=fragment_size_avg,
+            library_type=library_type,
+            )
+
+        """
+        if library_type == 'dsDNA':
+            dna_frag_nmole = dna_ng / (molecular_weight_dnMP*fragment_size_avg*2 + molecular_weight_dsDNAends)
+            dnMP_nmole = dna_frag_nmole*fragment_size_avg*2
+            
+        elif library_type == 'ssDNA':
+            dna_frag_nmole = dna_ng / (molecular_weight_dnMP*fragment_size_avg + molecular_weight_ssDNAends)
+            dnMP_nmole = dna_frag_nmole*fragment_size_avg
+
+        num_dnMP = dnMP_nmole * 10e-9 * scipy.constants.Avogadro
+    
+        return(num_dnMP)
