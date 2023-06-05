@@ -141,3 +141,20 @@ class PCR(object):
         num_dnMP = dnMP_nmole * 10e-9 * scipy.constants.Avogadro
     
         return(num_dnMP)
+    
+    @staticmethod
+    def get_base_counts_from_sequences(
+        sequences:list,
+    ):
+        """
+        Sample usage:
+        s1 = 'GTCTTCTAAACCTATGGACGGTA'
+        s2 = 'CCGAAGGGTTTTAAACTAGTGCTACGCTAGTC'
+        s3 = 'GCTAGTGCATGCCGCGCAGCGTATCAGTATCTAC'
+        ls_counter, counter_combined = get_base_counts_from_sequences([s1,s2,s3])
+
+        """
+        ls_counters = list(map(Counter, sequences))
+        counter_combined = sum(ls_counters, Counter())
+        
+        return ls_counters, counter_combined
