@@ -158,3 +158,28 @@ class PCR(object):
         counter_combined = sum(ls_counters, Counter())
         
         return ls_counters, counter_combined
+    
+    @staticmethod
+    def calculate_efficiencies_dntp(
+        Counter_ATCG_initial,
+        Counter_ATCG_available,
+    )->(Counter, float):
+
+        """
+        Counter_ATCG_initial = Counter({'A': 200, 'T': 200, 'G': 200, 'C': 200})
+        Counter_ATCG_available = Counter({'A': 20, 'T': 30, 'G': 15, 'C': 50})
+
+        calculate_efficiencies_dntp(
+            Counter_ATCG_initial=Counter_ATCG_initial,
+            Counter_ATCG_available=Counter_ATCG_available,
+        )
+        """
+
+        assert all(np.array(list(Counter_ATCG_available.values())) > 0), print(
+            'There is insufficient dntp to complete the current cycle of PCR,'
+        )
+
+        dict_ATGC_efficiencies = {k:Counter_ATCG_available[k]/v for k, v in Counter_ATCG_initial.items()}
+        efficiency_dntp = min(dict_ATGC_efficiencies.values())
+
+        return dict_ATGC_efficiencies, efficiency_dntp
