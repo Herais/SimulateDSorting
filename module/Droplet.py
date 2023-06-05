@@ -97,22 +97,6 @@ class Droplet(object):
         num_cells = int(num_cells)
 
         return num_cells
-    
-    @staticmethod
-    def calculate_n_droplets_from_bulk(
-        V_i:float=500, #ul
-        size_droplet:float=20, #um
-        efficiency:float=0.6,
-        size_type:str='diameter')->int:
-
-        volume_avg_droplet_um3 = dp.calculate_volume(
-        size=size_droplet,
-        size_type=size_type)
-
-        volume_avg_droplet_ul = dp.convert_um3_to_ul(volume_avg_droplet_um3)
-        n_droplets = int(V_i/volume_avg_droplet_ul*efficiency)
-
-        return n_droplets
 
     @staticmethod
     def generate_droplets_with_variable_sizes(
