@@ -122,7 +122,7 @@ class PCR(object):
         ----
         dna_ng=500
         fragment_size_avg=550 #bp
-        library_type='ssDNA'
+        library_type='dsDNA'
         approximate_nt_count_from_dna_ng(
             dna_ng=dna_ng,
             fragment_size_avg=fragment_size_avg,
@@ -142,6 +142,26 @@ class PCR(object):
     
         return(num_dnMP)
     
+    @staticmethod
+    def calculate_array_lengths_sequences(
+        array_amplicon_sequences
+    )->np.array(str):
+        """
+        Sample usage
+        ----
+        s1 = 'GTCTTCTAAACCTATGGACGGTA'
+        s2 = 'CCGAAGGGTTTTAAACTAGTGCTACGCTAGTC'
+        s3 = 'GCTAGTGCATGCCGCGCAGCGTATCAGTATCTAC'
+        array_amplicon_sequences = np.array([s1, s2, s3])
+
+        calculate_array_lengths_sequences(
+            array_amplicon_sequences=array_amplicon_sequences,
+        )
+        """
+        array_lengths_amplicon = np.array(list(map(len, array_amplicon_sequences)))
+        
+        return array_lengths_amplicon
+
     @staticmethod
     def get_base_counts_from_sequences(
         sequences:list,
