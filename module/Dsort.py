@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import itertools
 
 #local libraries
-from Data import FlowData as fld
-from Tools import Droplet as dp
+from Data import FlowData
+from Droplet import Droplet
 
 class DropletSorter(object):
  
@@ -43,7 +43,7 @@ class DropletSorter(object):
             dftmp = df[[colname_strain, colname_strainP]].drop_duplicates()
             ret['strain2P'] = dict(zip(dftmp[colname_strain], dftmp[colname_strainP]))
         else:
-            tmp_ret = fld.assign_sampling_probability(df, colname_strain=colname_strain)
+            tmp_ret = FlowData.assign_sampling_probability(df, colname_strain=colname_strain)
             df = tmp_ret['df']
             ret['strain2P'] = tmp_ret['strain2P']
             ret['strain2count'] = tmp_ret['strain2count']
@@ -111,7 +111,7 @@ class DropletSorter(object):
             dftmp = df[[colname_strain, colname_strainP]].drop_duplicates()
             ret['strain2P'] = dict(zip(dftmp[colname_strain], dftmp[colname_strainP]))
         else:
-            tmp_ret = fld.assign_sampling_probability(df, colname_strain=colname_strain)
+            tmp_ret = FlowData.assign_sampling_probability(df, colname_strain=colname_strain)
             df = tmp_ret['df']
             ret['strain2P'] = tmp_ret['strain2P']
             ret['strain2count'] = tmp_ret['strain2count']
@@ -206,7 +206,7 @@ class DropletSorter(object):
             dftmp = df[[colname_strain, colname_strainP]].drop_duplicates()
             ret['strain2P'] = dict(zip(dftmp[colname_strain], dftmp[colname_strainP]))
         else:
-            tmp_ret = fld.assign_sampling_probability(df, colname_strain=colname_strain)
+            tmp_ret = FlowData.assign_sampling_probability(df, colname_strain=colname_strain)
             df = tmp_ret['df']
             ret['strain2P'] = tmp_ret['strain2P']
             ret['strain2count'] = tmp_ret['strain2count']
