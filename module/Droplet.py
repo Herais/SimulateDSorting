@@ -2,6 +2,7 @@ import math
 import torch
 import numpy as np
 import pandas as pd
+from Droplet import Droplet
 
 class Droplet(object):
  
@@ -141,11 +142,11 @@ class Droplet(object):
         )
         """
 
-        volume_avg_droplet_um3 = dp.calculate_volume(
+        volume_avg_droplet_um3 = Droplet.calculate_volume(
                                     size=size_droplet,
                                     size_type=size_type)
 
-        volume_avg_droplet_ul = dp.convert_um3_to_ul(volume_avg_droplet_um3)
+        volume_avg_droplet_ul = Droplet.convert_um3_to_ul(volume_avg_droplet_um3)
         n_droplets = int(V_i/volume_avg_droplet_ul*efficiency_encapsulation)
 
         return n_droplets
