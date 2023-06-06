@@ -89,7 +89,7 @@ class PCR(object):
         """
         dnTP_mmole_per_liter = dnTP_mM
         dnTP_mmole = dnTP_mmole_per_liter*volume_microliter*10e-6
-        num_dnTP = dnTP_mmole * 10e-6 * scipy.constants.Avogadro
+        num_dnTP = dnTP_mmole * 1e-3 * scipy.constants.Avogadro
 
         return(num_dnTP)
     
