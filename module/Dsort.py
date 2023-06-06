@@ -229,18 +229,18 @@ class DropletSorter(object):
                                                     size_droplet*scale_droplet_size, 
                                                     n_rounds)
             ls_num_cells_at_saturation_in_droplet = \
-                list(map(dp.calculate_num_cell_at_saturation, ls_size_droplet))
+                list(map(Droplet.calculate_num_cell_at_saturation, ls_size_droplet))
         else:
             ls_size_droplet = [size_droplet]*n_rounds
             ls_num_cells_at_saturation_in_droplet  = \
-                [dp.calculate_num_cell_at_saturation(size_droplet)]*n_rounds
+                [Droplet.calculate_num_cell_at_saturation(size_droplet)]*n_rounds
         
         # get maximum droplet_size
         max_num_cells_at_saturation = max(ls_num_cells_at_saturation_in_droplet)
         ret['max_num_cells_at_saturation'] = max_num_cells_at_saturation
 
-        ls_volume_droplet_t0_um3= list(map(dp.calculate_volume, ls_size_droplet))
-        ls_volume_droplet_t0_pl = list(map(dp.convert_um3_to_pl, ls_volume_droplet_t0_um3))
+        ls_volume_droplet_t0_um3= list(map(Droplet.calculate_volume, ls_size_droplet))
+        ls_volume_droplet_t0_pl = list(map(Droplet.convert_um3_to_pl, ls_volume_droplet_t0_um3))
 
         # varying num of encapsulated cells in each droplet
         if func_cells_encapsulated_per_droplet:
