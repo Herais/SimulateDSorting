@@ -390,6 +390,7 @@ class DropletSorter(object):
                                           ),
                             include_lowest=False,
                             )
+        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
 
         fig, ax = plt.subplots()
         df.groupby([colname_strain, 'bin'])\
