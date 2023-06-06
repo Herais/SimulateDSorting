@@ -370,3 +370,37 @@ class DropletSorter(object):
         df[colname_strain] = df['idx'].apply(lambda x: df_original.loc[x, colname_strain])
 
         return df.copy()
+
+    @staticmethod
+    def barplot_histogram(
+        df, 
+        colname_f1='mCherry-A', 
+        colname_strain='sid', 
+        bins=100,
+        figsize=(14,6),
+        return_df=False,
+    ):
+        """
+        """
+
+        df['bin'] = pd.cut(df[colname_f1], 
+                            bins=np.arange(df[colname_f1].min(),
+                                           df[colname_f1].max(),
+                                           (df[colname_f1].max()-df[colname_f1].min())/bins,
+                                          ),
+                            include_lowest=False,
+                            )
+
+        fig, ax = plt.subplots()
+        df.groupby([colname_strain, 'bin'])\
+            .size()\
+            .unstack(0)\
+            .plot.bar(
+                stacked=True,
+                figsize=figsize,
+                ax=ax
+            )
+        plt.xticks(fontsize=8)
+
+        if return_df:
+            return df
