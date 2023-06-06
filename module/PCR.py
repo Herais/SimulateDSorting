@@ -110,7 +110,7 @@ class PCR(object):
         """
         Default settings
         ----
-        molecular_weight_dAMP=331.2,
+        molecular_weight_dAMP=331.2, # Dalton = 1g/mole = 1ng/nmole
         molecular_weight_dCMP=307.2,
         molecular_weight_dGMP=347.2,
         molecular_weight_dTMP=322.2,
@@ -138,9 +138,9 @@ class PCR(object):
             dna_frag_nmole = dna_ng / (molecular_weight_dnMP*fragment_size_avg + molecular_weight_ssDNAends)
             dnMP_nmole = dna_frag_nmole*fragment_size_avg
 
-        num_dnMP = dnMP_nmole * 10e-9 * scipy.constants.Avogadro
+        count_dnMP = dnMP_nmole * 1e-9 * scipy.constants.Avogadro
     
-        return(num_dnMP)
+        return(count_dnMP)
     
     @staticmethod
     def calculate_array_lengths_sequences(
