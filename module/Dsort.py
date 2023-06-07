@@ -379,6 +379,7 @@ class DropletSorter(object):
         bins=100,
         figsize=(14,6),
         return_df=False,
+        ax=None,
     ):
         """
         """
@@ -392,14 +393,13 @@ class DropletSorter(object):
                             )
         df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
 
-        fig, ax = plt.subplots()
         df.groupby([colname_strain, 'bin100'])\
             .size()\
             .unstack(0)\
             .plot.bar(
                 stacked=True,
                 figsize=figsize,
-                ax=ax
+                ax=ax,
             )
         plt.xticks(fontsize=8)
 
