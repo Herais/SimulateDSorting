@@ -346,6 +346,12 @@ class DropletSorter(object):
                 df[col].hist(bins=bins, ax=axes[i_ax])
                 cols_xform.append(col)
                 axes[i_ax].set_title(col, fontsize=8)
+            if col == 'size_droplet':
+                axes[i_ax].set_xlim([0, 50])
+            if col == 'num_cells_encapsulated':
+                axes[i_ax].set_xlim([0, 6])
+            if col == 'num_cells_at_saturation_in_droplet':
+                axes[i_ax].set_xlim(0, 600)
             i_ax+=1
             
         plt.show()
