@@ -229,18 +229,18 @@ class DropletSorter(object):
                                                     size_droplet*scale_droplet_size, 
                                                     n_rounds)
             ls_num_cells_at_saturation_in_droplet = \
-                list(map(dp.calculate_num_cell_at_saturation, ls_size_droplet))
+                list(map(Droplet.calculate_num_cell_at_saturation, ls_size_droplet))
         else:
             ls_size_droplet = [size_droplet]*n_rounds
             ls_num_cells_at_saturation_in_droplet  = \
-                [dp.calculate_num_cell_at_saturation(size_droplet)]*n_rounds
+                [Droplet.calculate_num_cell_at_saturation(size_droplet)]*n_rounds
         
         # get maximum droplet_size
         max_num_cells_at_saturation = max(ls_num_cells_at_saturation_in_droplet)
         ret['max_num_cells_at_saturation'] = max_num_cells_at_saturation
 
-        ls_volume_droplet_t0_um3= list(map(dp.calculate_volume, ls_size_droplet))
-        ls_volume_droplet_t0_pl = list(map(dp.convert_um3_to_pl, ls_volume_droplet_t0_um3))
+        ls_volume_droplet_t0_um3= list(map(Droplet.calculate_volume, ls_size_droplet))
+        ls_volume_droplet_t0_pl = list(map(Droplet.convert_um3_to_pl, ls_volume_droplet_t0_um3))
 
         # varying num of encapsulated cells in each droplet
         if func_cells_encapsulated_per_droplet:
@@ -376,3 +376,38 @@ class DropletSorter(object):
         df[colname_strain] = df['idx'].apply(lambda x: df_original.loc[x, colname_strain])
 
         return df.copy()
+
+    @staticmethod
+    def barplot_histogram(
+        df, 
+        colname_f1='mCherry-A', 
+        colname_strain='sid', 
+        bins=100,
+        figsize=(14,6),
+        return_df=False,
+        ax=None,
+    ):
+        """
+        """
+
+        df['bin'] = pd.cut(df[colname_f1], 
+                            bins=np.arange(df[colname_f1].min(),
+                                           df[colname_f1].max(),
+                                           (df[colname_f1].max()-df[colname_f1].min())/(bins+1),
+                                          ),
+                            include_lowest=False,
+                            )
+        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
+
+        df.groupby([colname_strain, 'bin100'])\
+            .size()\
+            .unstack(0)\
+            .plot.bar(
+                stacked=True,
+                figsize=figsize,
+                ax=ax,
+            )
+        plt.xticks(fontsize=8)
+
+        if return_df:
+            return df
