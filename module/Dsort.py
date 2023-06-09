@@ -381,8 +381,9 @@ class DropletSorter(object):
     def barplot_histogram(
         df, 
         colname_f1='mCherry-A', 
-        colname_strain='sid', 
+        colname_strain='sid',
         bins=100,
+        color=None,
         figsize=(14,6),
         return_df=False,
         ax=None,
@@ -406,6 +407,7 @@ class DropletSorter(object):
                 stacked=True,
                 figsize=figsize,
                 ax=ax,
+                color=color,
             )
         plt.xticks(fontsize=8)
 
