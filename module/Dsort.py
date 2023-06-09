@@ -383,7 +383,7 @@ class DropletSorter(object):
         colname_f1='mCherry-A', 
         colname_strain='sid',
         bins=100,
-        color='skyblue',
+        color='steelblue',
         figsize=(14,6),
         return_df=False,
         ax=None,
