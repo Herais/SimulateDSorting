@@ -391,13 +391,14 @@ class DropletSorter(object):
         """
         """
 
+
         df = df.copy()
         df['bin'] = pd.cut(df[colname_f1], 
                             bins=np.arange(df[colname_f1].min(),
                                            df[colname_f1].max(),
                                            (df[colname_f1].max()-df[colname_f1].min())/(bins+1),
                                           ),
-                            include_lowest=False,
+                            include_lowest=True,
                             )
         df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
 
