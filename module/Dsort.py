@@ -394,7 +394,7 @@ class DropletSorter(object):
 
         df = df.copy()
         range_f1 = df[colname_f1].max()-df[colname_f1].min()
-        a_bins = np.arrange(df[colname_f1].min(), df[colname_f1].max(), range_f1/bins)
+        a_bins = np.arange(df[colname_f1].min(), df[colname_f1].max(), range_f1/bins)
         a_bins = np.append(a_bins, df[colname_f1].max())
         df['bin'] = pd.cut(df[colname_f1], 
                             bins=a_bins,
