@@ -463,7 +463,7 @@ class DropletSorter(object):
             df=df,
             colname_f1=colname_f1,
             bins=bins,
-            return_df=False,
+            return_df=True,
             ax=axes[0],
             color=color)
         
