@@ -465,12 +465,12 @@ class DropletSorter(object):
             bins=100,
             return_df=True,
             ax=axes[0],
-            color=None)
+            color=color)
         
         fontP = FontProperties()
         fontP.set_size(font_size) #'x-small' 'xx-small'
         axes[0].legend(loc=0, 
-                       ncol=1, 
+                       ncol=1,
                        bbox_to_anchor=(0, 0, 1, 1),
                        prop = fontP,
                        fancybox=True,
