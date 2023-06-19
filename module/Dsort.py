@@ -494,3 +494,47 @@ class DropletSorter(object):
         ret['dfbin_strains'] = dfbin_strains
 
         return ret
+    
+    @staticmethod
+    def plot_histogram_strains_individual(
+        df,
+        ls_sid=ls_wz,
+        bins=100,
+        ls_color=palette12,
+        figsize=(12,6),
+        height_ratios=None,
+        nrows=4,
+        ncols=3,
+        fontsize=10,
+        size_title=8,
+    ):
+
+        fig, axes = plt.subplots(
+                            nrows, ncols,
+                            figsize=figsize,
+                            sharex=True,
+                            sharey=True,
+                            gridspec_kw={'height_ratios': height_ratios}
+                        )
+
+        r = -1
+        c = 0
+        xticks = list(range(1, bins+1))
+
+        for i, sid in enumerate(sorted(ls_sid)):
+            if i % ncols == 0:
+                c = 0
+                r += 1
+        dfstrain = df[df['sid'].apply(lambda x: x[0]) == sid]
+        #print(r, c)
+        dfstrain.groupby(['bin100'])['bin100'].count().plot.bar(
+            ax=axes[r][c], 
+            title=sid, 
+            fontsize=fontsize, 
+            color=ls_color[i]
+        )
+        axes[r][c].title.set_size(size_title)
+        axes[r][c].set_xticks(np.arange(-1,bins+1,25))
+        c += 1
+
+        return fig, axes
