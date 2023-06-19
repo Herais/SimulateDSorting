@@ -499,8 +499,8 @@ class DropletSorter(object):
     def plot_histogram_strains_individual(
         df,
         ls_sid,
+        ls_color,
         bins=100,
-        ls_color=palette12,
         figsize=(12,6),
         height_ratios=None,
         nrows=4,
