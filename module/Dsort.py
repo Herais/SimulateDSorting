@@ -464,7 +464,7 @@ class DropletSorter(object):
             colname_f1,
             bins=100,
             return_df=True,
-            ax=None,
+            ax=axes[0],
             color=None)
         
         fontP = FontProperties()
