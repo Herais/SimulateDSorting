@@ -508,6 +508,8 @@ class DropletSorter(object):
         fontsize=10,
         size_title=8,
     ):
+        """
+        """
 
         fig, axes = plt.subplots(
                             nrows, ncols,
