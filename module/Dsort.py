@@ -527,16 +527,16 @@ class DropletSorter(object):
             if i % ncols == 0:
                 c = 0
                 r += 1
-        dfstrain = df[df['sid'].apply(lambda x: x[0]) == sid]
-        #print(r, c)
-        dfstrain.groupby(['bin100'])['bin100'].count().plot.bar(
-            ax=axes[r][c], 
-            title=sid, 
-            fontsize=fontsize, 
-            color=ls_color[i]
-        )
-        axes[r][c].title.set_size(size_title)
-        axes[r][c].set_xticks(np.arange(-1,bins+1,25))
-        c += 1
+            dfstrain = df[df['sid'].apply(lambda x: x[0]) == sid]
+            #print(r, c)
+            dfstrain.groupby(['bin100'])['bin100'].count().plot.bar(
+                ax=axes[r][c], 
+                title=sid, 
+                fontsize=fontsize, 
+                color=ls_color[i]
+            )
+            axes[r][c].title.set_size(size_title)
+            axes[r][c].set_xticks(np.arange(-1,bins+1,25))
+            c += 1
 
         return fig, axes
