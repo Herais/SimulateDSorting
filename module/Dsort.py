@@ -6,6 +6,7 @@ import pandas as pd
 import random
 from collections import Counter
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 import itertools
 
 #local libraries
@@ -415,3 +416,81 @@ class DropletSorter(object):
 
         if return_df:
             return df
+
+    @staticmethod
+    def df_to_dfbin_strains(
+        df,
+        colname_strain='sid',
+        colname_bin='bin100',
+    ):
+
+        # get unique strain/strain combo in each bin
+        dfbin = df.groupby(['sid', 'bin100'])['sid'].nunique().rename('nunique_strain')
+
+        # demultiplex strain combo (droplets that encapsulated > 1 strains of cells)
+        dfbin = dfbin.reset_index()
+        dfbin['sid'] = dfbin['sid'].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
+        dfbin_strains = dfbin['sid'].apply(';'.join).str.split(';', expand=True)
+        dfbin_strains[['bin100', 'nunique_strain']] = dfbin[['bin100', 'nunique_strain']]
+        dfbin_strains = dfbin_strains.melt(id_vars=['bin100', 'nunique_strain'],
+                                        var_name='id_strain_in_droplet',
+                                        value_name='sid'
+                                        )
+
+        return dfbin_strains
+
+    @staticmethod 
+    def plot_histogram_highlighting_strains(
+        df,
+        colname_f1='sum_mCherry-A',
+        bins=100,
+        figsize=(24,8),
+        height_ratios=(4,1),
+        color=None, #palette12
+        font_size='x-small',
+        remove_legend=False,
+    ):
+        df = df.copy()
+        ret = {}
+
+        fig, axes = plt.subplots(2, 1, 
+                                 sharex=True, 
+                                 figsize=figsize, 
+                                 gridspec_kw={'height_ratios': height_ratios})
+
+        # plot histogram, color coding different strains
+        df =DropletSorter.barplot_histogram(
+            df,
+            colname_f1,
+            bins=100,
+            return_df=True,
+            ax=None,
+            color=None)
+        
+        fontP = FontProperties()
+        fontP.set_size(font_size) #'x-small' 'xx-small'
+        axes[0].legend(loc=0, 
+                       ncol=1, 
+                       bbox_to_anchor=(0, 0, 1, 1),
+                       prop = fontP,
+                       fancybox=True,
+                       shadow=False,
+                       title='LEGEND'
+                      )
+        
+        if remove_legend:
+            axes[0].get_legend().remove()
+
+        #
+        dfbin_strains = DropletSorter.df_to_dfbin_strains(df)
+        dfbin_strains.groupby(['sid', 'bin100'])['nunique_strain'].sum().unstack(0).plot.bar(
+            stacked=True, ax=axes[1], color=color)
+        axes[1].get_legend().remove()
+        axes[1].set_ylim([0,12])
+
+        ret['fig'] = fig
+        ret['axes'] = axes
+        ret['df'] = df
+        ret['dfbin_strains'] = dfbin_strains
+
+        return ret
