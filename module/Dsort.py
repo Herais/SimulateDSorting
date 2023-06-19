@@ -460,10 +460,10 @@ class DropletSorter(object):
 
         # plot histogram, color coding different strains
         df =DropletSorter.barplot_histogram(
-            df,
-            colname_f1,
-            bins=100,
-            return_df=True,
+            df=df,
+            colname_f1=colname_f1,
+            bins=bins,
+            return_df=False,
             ax=axes[0],
             color=color)
         
