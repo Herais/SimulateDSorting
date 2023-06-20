@@ -505,6 +505,7 @@ class DropletSorter(object):
         height_ratios=None,
         nrows=4,
         ncols=3,
+        ylim=(0,2600),
         fontsize=10,
         size_title=8,
     ):
@@ -534,7 +535,8 @@ class DropletSorter(object):
                 ax=axes[r][c], 
                 title=sid, 
                 fontsize=fontsize, 
-                color=ls_color[i]
+                color=ls_color[i],
+                ylim=ylim,
             )
             axes[r][c].title.set_size(size_title)
             axes[r][c].set_xticks(np.arange(-1,bins+1,25))
