@@ -386,6 +386,7 @@ class DropletSorter(object):
         bins=100,
         color='steelblue',
         figsize=(14,6),
+        ylim=None,
         return_df=False,
         ax=None,
     ):
@@ -410,7 +411,8 @@ class DropletSorter(object):
                 stacked=True,
                 figsize=figsize,
                 ax=ax,
-                color=color,
+                color=color
+                ylim=ylim,
             )
         plt.xticks(fontsize=8)
 
@@ -448,6 +450,7 @@ class DropletSorter(object):
         figsize=(24,8),
         height_ratios=(4,1),
         color=None, #palette12
+        ylim=None,
         font_size='x-small',
         remove_legend=False,
     ):
@@ -467,6 +470,7 @@ class DropletSorter(object):
             bins=bins,
             return_df=True,
             ax=axes[0],
+            ylim=ylim,
             color=color)
         
         fontP = FontProperties()
