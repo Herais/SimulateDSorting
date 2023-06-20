@@ -515,7 +515,7 @@ class DropletSorter(object):
         # wraps 'sid' in a tuple if it's a string
         df['sid'] = df['sid'].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
 
-        ret {}
+        ret = {}
         fig, axes = plt.subplots(
                             nrows, 
                             ncols,
