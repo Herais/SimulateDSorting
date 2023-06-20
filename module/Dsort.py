@@ -411,7 +411,7 @@ class DropletSorter(object):
                 stacked=True,
                 figsize=figsize,
                 ax=ax,
-                color=color
+                color=color,
                 ylim=ylim,
             )
         plt.xticks(fontsize=8)
