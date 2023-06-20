@@ -425,16 +425,16 @@ class DropletSorter(object):
     ):
 
         # get unique strain/strain combo in each bin
-        dfbin = df.groupby(['sid', 'bin100'])['sid'].nunique().rename('nunique_strain')
+        dfbin = df.groupby([colname_strain, colname_bin])[colname_strain].nunique().rename('nunique_strain')
 
         # demultiplex strain combo (droplets that encapsulated > 1 strains of cells)
         dfbin = dfbin.reset_index()
-        dfbin['sid'] = dfbin['sid'].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
-        dfbin_strains = dfbin['sid'].apply(';'.join).str.split(';', expand=True)
-        dfbin_strains[['bin100', 'nunique_strain']] = dfbin[['bin100', 'nunique_strain']]
-        dfbin_strains = dfbin_strains.melt(id_vars=['bin100', 'nunique_strain'],
+        dfbin[colname_strain] = dfbin[colname_strain].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
+        dfbin_strains = dfbin[colname_strain].apply(';'.join).str.split(';', expand=True)
+        dfbin_strains[[colname_bin, 'nunique_strain']] = dfbin[[colname_bin, 'nunique_strain']]
+        dfbin_strains = dfbin_strains.melt(id_vars=[colname_bin, 'nunique_strain'],
                                         var_name='id_strain_in_droplet',
-                                        value_name='sid'
+                                        value_name=colname_strain
                                         )
 
         return dfbin_strains
@@ -484,7 +484,7 @@ class DropletSorter(object):
             axes[0].get_legend().remove()
 
         #
-        dfbin_strains = DropletSorter.df_to_dfbin_strains(df)
+        dfbin_strains = DropletSorter.df_to_dfbin_strains(df, colname_strain=colname_strain)
         dfbin_strains.groupby([colname_strain, 'bin100'])['nunique_strain'].sum().unstack(0).plot.bar(
             stacked=True, ax=axes[1], color=color)
         axes[1].get_legend().remove()
