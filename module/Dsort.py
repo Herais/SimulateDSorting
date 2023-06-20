@@ -511,6 +511,10 @@ class DropletSorter(object):
     ):
         """
         """
+        df = df.copy()
+        # wraps 'sid' in a tuple if it's a string
+        df['sid'] = df['sid'].apply(lambda x: tuple([x]) if insinstance(x, str) else x)
+
         ret {}
         fig, axes = plt.subplots(
                             nrows, 
@@ -523,7 +527,6 @@ class DropletSorter(object):
 
         r = -1
         c = 0
-        xticks = list(range(1, bins+1))
 
         for i, sid in enumerate(sorted(ls_sid)):
             if i % ncols == 0:
