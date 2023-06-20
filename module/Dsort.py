@@ -510,9 +510,10 @@ class DropletSorter(object):
     ):
         """
         """
-
+        ret {}
         fig, axes = plt.subplots(
-                            nrows, ncols,
+                            nrows, 
+                            ncols,
                             figsize=figsize,
                             sharex=True,
                             sharey=True,
@@ -539,4 +540,8 @@ class DropletSorter(object):
             axes[r][c].set_xticks(np.arange(-1,bins+1,25))
             c += 1
 
-        return fig, axes
+        ret['fig'] = fig
+        ret['axes'] = axes
+        ret['dfstrain'] = dfstrain
+
+        return ret
