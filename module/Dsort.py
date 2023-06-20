@@ -401,7 +401,7 @@ class DropletSorter(object):
                             bins=a_bins,
                             include_lowest=True,
                             )
-        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
+        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,len(df['bin'].cat.categories)+1)))
 
         df.groupby([colname_strain, 'bin100'])\
             .size()\
