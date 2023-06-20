@@ -443,6 +443,7 @@ class DropletSorter(object):
     def plot_histogram_highlighting_strains(
         df,
         colname_f1='sum_mCherry-A',
+        colname_strain='sid',
         bins=100,
         figsize=(24,8),
         height_ratios=(4,1),
@@ -462,6 +463,7 @@ class DropletSorter(object):
         df =DropletSorter.barplot_histogram(
             df=df,
             colname_f1=colname_f1,
+            colname_strain=colname_strain,
             bins=bins,
             return_df=True,
             ax=axes[0],
@@ -483,7 +485,7 @@ class DropletSorter(object):
 
         #
         dfbin_strains = DropletSorter.df_to_dfbin_strains(df)
-        dfbin_strains.groupby(['sid', 'bin100'])['nunique_strain'].sum().unstack(0).plot.bar(
+        dfbin_strains.groupby([colname_strain, 'bin100'])['nunique_strain'].sum().unstack(0).plot.bar(
             stacked=True, ax=axes[1], color=color)
         axes[1].get_legend().remove()
         axes[1].set_ylim([0,12])
@@ -500,6 +502,7 @@ class DropletSorter(object):
         df,
         ls_sid,
         ls_color,
+        colname_strain='sid',
         bins=100,
         figsize=(12,6),
         height_ratios=None,
@@ -513,7 +516,7 @@ class DropletSorter(object):
         """
         df = df.copy()
         # wraps 'sid' in a tuple if it's a string
-        df['sid'] = df['sid'].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
+        df[colname_strain] = df[colname_strain].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
 
         ret = {}
         fig, axes = plt.subplots(
@@ -532,7 +535,7 @@ class DropletSorter(object):
             if i % ncols == 0:
                 c = 0
                 r += 1
-            dfstrain = df[df['sid'].apply(lambda x: x[0]) == sid]
+            dfstrain = df[df[colname_strain].apply(lambda x: x[0]) == sid]
             #print(r, c)
             dfstrain.groupby(['bin100'])['bin100'].count().plot.bar(
                 ax=axes[r][c], 
