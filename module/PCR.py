@@ -388,6 +388,7 @@ class PCR(object):
             t_denature_cycle=30,
             t_anneal_cycle=62,
             efficiencies_dntp=None,
+            efficiencies_dntp_type='square',
             efficiencies_access=None,
             efficiencies_denature=None,
             efficiencies_anneal=None,
@@ -437,7 +438,6 @@ class PCR(object):
 
         # process primers
 
-
         # run cycles
         ncycle2ret = {}
         for n in range(num_pcr_cycles):
@@ -448,6 +448,7 @@ class PCR(object):
                             amplicons=amplicons,
                             t_denature_cycle=t_denature_cycle,
                             t_anneal_cycle=t_anneal_cycle,
+                            efficiencies_dntp_type=efficiencies_dntp_type,
                         )
 
             ncycle2ret[n] = ret_cycle
