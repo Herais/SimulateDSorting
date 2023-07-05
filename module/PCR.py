@@ -465,6 +465,15 @@ class PCR(object):
 
         return ret
 
+    @staticmethod
+    def cartprod(*arrays):
+        """
+        cartesian product
+        """
+        N = len(arrays)
+        return np.transpose(np.meshgrid(*arrays, indexing='ij'),
+                        np.roll(np.arange(N + 1), -1)).reshape(-1, N)
+
 
 class Polymerase(object):
  
