@@ -12,6 +12,7 @@ import itertools
 
 # import local libraries
 from Dsort import DropletSorter
+from Droplet import Droplet
 
 class PCR(object):
  
@@ -82,8 +83,8 @@ class PCR(object):
         dict_ATCG_mM=None,
         
         """
-        volume_um3 = DropletSorter.calculate_volume(size=size_droplet_um, size_type=size_droplet_type)
-        volume_microliter = DropletSorter.convert_um3_to_ul(volume_um3)
+        volume_um3 = Droplet.calculate_volume(size=size_droplet_um, size_type=size_droplet_type)
+        volume_microliter = Droplet.convert_um3_to_ul(volume_um3)
         num_dnTP_available = PCR.approximate_num_nt_from_dntp_mM(
         dnTP_mM=dnTP_mM, 
         volume_microliter=volume_microliter
@@ -284,10 +285,8 @@ class PCR(object):
         efficiencies_anneal=None,
         efficiencies_k=None,
         use_tensor=False,
-        T_denature=95,
-        t_denature=30,
-        T_anneal=62,
-        t_anneal=15,
+        t_denature_cycle=30,
+        t_anneal_cycle=62,
     )->dict:
 
         """
