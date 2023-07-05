@@ -19,6 +19,29 @@ class PCR(object):
         ----------
         """
         super(PCR, self).__init__()
+
+    @staticmethod
+    def convert_primer_uM_to_count(
+            primer_uM:float=0.5,
+            volume_ul:float=4.188790204786391e-06,
+        )->float:
+
+        """
+        Sample usage
+        ----
+        primer_F_uM = 0.5
+        primer_R_uM = 0.5
+        volume_um3 = Droplet.calculate_volume(size=20)
+        droplet_volume_ul=dp.convert_um3_to_ul(volume_um3)
+
+        primer_F_copies = convert_primer_uM_to_count(primer_uM=primer_F_uM, volume_ul=droplet_volume_ul)
+        primer_R_copies = convert_primer_uM_to_count(primer_uM=primer_R_uM, volume_ul=droplet_volume_ul)
+        """
+        primer_mole_per_liter = primer_uM * 1e-6
+        primer_mole =  primer_mole_per_liter * volume_ul * 1e-6
+        count_primers = primer_mole * scipy.constants.Avogadro
+
+        return count_primers
     
     @staticmethod
     def get_dnTP_counts(
