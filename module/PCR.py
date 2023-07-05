@@ -355,7 +355,7 @@ class PCR(object):
             counter_ATCG_combined_curr = counter_ATCG_combined_curr + counter_amplicon_ATCG_curr
             counters_amplicon_ATCG_curr.append(counter_amplicon_ATCG_curr)
         ret['counter_ATCG_combined_curr'] = counter_ATCG_combined_curr
-        
+
         counter_dnTP_at_end_of_cycle = counter_dnTP_at_start_of_cycle - counter_ATCG_combined_curr
         num_dnTP_left = len(counter_dnTP_at_end_of_cycle)
         if num_dnTP_left < 4:
@@ -369,6 +369,90 @@ class PCR(object):
         
         return ret
 
+    @staticmethod
+    def run_droplet_PCR(
+            amplicons,
+            nums_template_initial=None,
+            size_droplet_um=20,
+            num_pcr_cycles:int=30,
+            dnTP_mM:float=0.2,
+            dna_ng_per_ul=10,
+            fragment_size_avg:int=550, #bp
+            primer_F_uM = 0.5,
+            primer_R_uM = 0.5,
+            t_denature_intial=95,
+            t_denature_cycle=30,
+            t_anneal_cycle=62,
+            efficiencies_dntp=None,
+            efficiencies_access=None,
+            efficiencies_denature=None,
+            efficiencies_anneal=None,
+            efficiencies_k=None,
+            library_type='dsDNA',
+            use_tensor=False,
+        ):
+        """
+        """
+        ret = {}
+
+        # process amplicons
+        assert len(amplicons) > 0, 'please provide amplicon sequences'
+        num_unique_amplicons = len(amplicons)
+        lengths_amplicon = np.array(list(map(len, amplicons)))
+        counters_amplicon_ATCG, counter_ATCG_combined = PCR.get_base_counts_from_sequences(amplicons)
+
+        if not np.any(nums_template_initial):
+            nums_template_initial = np.array([1]*num_unique_amplicons)
+        
+        nums_template_at_start_of_cycle = nums_template_initial
+        ret['nums_template_initial'] = nums_template_initial
+
+
+        # process droplet parameters
+        volume_um3 = Droplet.calculate_volume(size=size_droplet_um, size_type='diameter')
+        droplet_volume_ul = Droplet.convert_um3_to_ul(volume_um3)
+
+        # process dnTPs
+        num_dnTP = PCR.approximate_dntp_count_from_dntp_mM(dnTP_mM=dnTP_mM, volume_microliter=droplet_volume_ul)
+        counter_dnTP_initial = Counter({'A':num_dnTP, 'T':num_dnTP, 'C':num_dnTP, 'G':num_dnTP})
+        counter_dnTP_at_start_of_cycle = counter_dnTP_initial
+
+
+        ret['nums_template_at_start_of_cycle'] = nums_template_at_start_of_cycle
+        ret['counter_dnTP_at_start_of_cycle'] = counter_dnTP_at_start_of_cycle
+        ret['counter_dnTP_initial'] = counter_dnTP_initial
+        ret['amplicons'] = amplicons
+
+        # process dna
+        dna_ng_in_droplet = dna_ng_per_ul*droplet_volume_ul
+        num_dnMP = PCR.approximate_nt_count_from_dna_ng(
+                    dna_ng=dna_ng_in_droplet,
+                    fragment_size_avg=fragment_size_avg,
+                    library_type=library_type
+                )
+
+        # process primers
+
+
+        # run cycles
+        ncycle2ret = {}
+        for n in range(num_pcr_cycles):
+            ret_cycle = PCR.pcr_cycle(
+                            nums_template_at_start_of_cycle=nums_template_at_start_of_cycle,
+                            counter_dnTP_at_start_of_cycle=counter_dnTP_at_start_of_cycle,
+                            counter_dnTP_initial=counter_dnTP_initial,
+                            amplicons=amplicons,
+                            t_denature_cycle=t_denature_cycle,
+                            t_anneal_cycle=t_anneal_cycle,
+                        )
+
+            ncycle2ret[n] = ret_cycle
+            nums_template_at_start_of_cycle = ret_cycle['nums_template_at_end_of_cycle']
+            counter_dnTP_at_start_of_cycle = ret_cycle['counter_dnTP_at_end_of_cycle']
+
+        ret['ncycle2ret'] = ncycle2ret
+
+        return ret
 
 
 class Polymerase(object):
