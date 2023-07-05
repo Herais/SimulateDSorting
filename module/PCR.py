@@ -271,6 +271,103 @@ class PCR(object):
         count_primers = primer_mole * scipy.constants.Avogadro
 
         return count_primers
+    
+    @staticmethod
+    def pcr_cycle(
+        nums_template_at_start_of_cycle:list,
+        counter_dnTP_at_start_of_cycle:collections.Counter,
+        counter_dnTP_initial:collections.Counter,
+        amplicons,
+        efficiencies_dntp=None,
+        efficiencies_access=None,
+        efficiencies_denature=None,
+        efficiencies_anneal=None,
+        efficiencies_k=None,
+        use_tensor=False,
+        T_denature=95,
+        t_denature=30,
+        T_anneal=62,
+        t_anneal=15,
+    )->dict:
+
+        """
+        """
+
+        ret = {}
+        ret['nums_template_at_start_of_cycle'] = nums_template_at_start_of_cycle
+        ret['counter_dnTP_at_start_of_cycle'] = counter_dnTP_at_start_of_cycle
+        ret['counter_dnTP_initial'] = counter_dnTP_initial
+        ret['amplicons'] = amplicons
+
+
+        nums_template_at_start_of_cycle = np.array(nums_template_at_start_of_cycle)
+
+        assert len(amplicons) > 0, 'please provide amplicon sequences'
+        num_unique_amplicons = len(amplicons)
+        lengths_amplicon = np.array(list(map(len, amplicons)))
+
+        counters_amplicon_ATCG, counter_ATCG_combined = PCR.get_base_counts_from_sequences(amplicons)
+
+
+        if not np.any(efficiencies_dntp):
+            assert len(counter_dnTP_at_start_of_cycle) == 4, 'At least one of the dnTPs has depleted'
+            dict_efficiencies_dntp = {k:counter_dnTP_at_start_of_cycle[k]/v for k, v in counter_dnTP_initial.items()}
+            efficiencies_dntp = PCR.calculate_efficiencies_dntp_for_amplicons(counters_amplicon_ATCG, dict_efficiencies_dntp)
+
+        if not np.any(efficiencies_access):
+            efficiencies_access = np.array([1.]*num_unique_amplicons)
+
+        if not np.any(efficiencies_denature):
+            efficiencies_denature = np.array([1.]*num_unique_amplicons)
+
+        if not np.any(efficiencies_anneal):
+            efficiencies_anneal = np.array([1.]*num_unique_amplicons)
+
+        if not np.any(efficiencies_k):
+            efficiencies_k = np.array([1.]*num_unique_amplicons)
+
+        ret['efficiencies_dntp_curr'] = efficiencies_dntp
+        ret['efficiencies_access_curr'] = efficiencies_access
+        ret['efficiencies_dntp_denature_curr'] = efficiencies_denature
+        ret['efficiencies_anneal_curr'] = efficiencies_anneal
+        ret['efficiencies_dntp_denature_curr'] = efficiencies_denature
+
+        # load to pytorch tensor
+        if use_tensor:
+            efficiencies_dntp = torch.tensor(efficiencies_dntp)
+            efficiencies_denature = torch.tensor(efficiencies_denature)
+            efficiencies_anneal= torch.tensor(efficiencies_anneal)
+            efficiencies_k = torch.tensor(efficiencies_k)
+
+
+        # calculate PCR output at the end of the current cycle
+        nums_template_produced_curr = nums_template_at_start_of_cycle* \
+                                    efficiencies_dntp* \
+                                    efficiencies_access* \
+                                    efficiencies_denature* \
+                                    efficiencies_anneal* \
+                                    efficiencies_k
+
+        # ATCG consumed in current cycle
+        counters_amplicon_ATCG_curr = []
+        counter_ATCG_combined_curr = Counter()
+        for counter_amplicon_ATCG, num_template in zip(counters_amplicon_ATCG, nums_template_produced_curr):
+            counter_amplicon_ATCG_curr = Counter({k:v*num_template for k, v in counter_amplicon_ATCG.items()})
+            counter_ATCG_combined = counter_ATCG_combined + counter_amplicon_ATCG_curr
+            counters_amplicon_ATCG_curr.append(counter_amplicon_ATCG_curr)
+
+        counter_dnTP_at_end_of_cycle = counter_dnTP_at_start_of_cycle - counter_ATCG_combined_curr
+        num_dnTP_left = len(counter_dnTP_at_end_of_cycle)
+        if num_dnTP_left < 4:
+            ret['nums_template_at_end_of_cycle'] = nums_template_at_start_of_cycle
+            ret['counter_dnTP_at_end_of_cycle'] = counter_dnTP_at_start_of_cycle
+        else:
+            nums_template_at_end_of_cycle = nums_template_at_start_of_cycle + nums_template_produced_curr
+            ret['nums_template_at_end_of_cycle'] = nums_template_at_end_of_cycle
+            ret['counter_dnTP_at_end_of_cycle'] = counter_dnTP_at_end_of_cycle
+        
+        
+        return ret
 
 
 
