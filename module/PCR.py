@@ -10,6 +10,8 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import itertools
 
+# import local libraries
+from Dsort import DropletSorter
 
 class PCR(object):
  
@@ -42,7 +44,27 @@ class PCR(object):
         count_primers = primer_mole * scipy.constants.Avogadro
 
         return count_primers
-    
+
+    @staticmethod
+    def calculate_efficiencies_dntp_for_amplicons(
+            ls_counter_amplicon_ATCG,
+            dict_efficiencies_dnTP,
+        ):
+        """
+        Sample usage
+        ----
+        calculate_efficiencies_dntp_for_amplicons(ls_counter_amplicon_ATCG, dict_efficiencies_dntp)
+        """
+
+        ls = []
+        for counter_amplicon_ATCG in ls_counter_amplicon_ATCG:
+            total_dnTP_count = sum(counter_amplicon_ATCG.values())
+            efficiency_amplicon_bases = np.array([counter_amplicon_ATCG[k]*v for k, v in dict_efficiencies_dnTP.items()])
+            efficiency_amplicon = sum(efficiency_amplicon_bases)/total_dnTP_count
+            ls.append(efficiency_amplicon)
+
+        return np.array(ls)
+
     @staticmethod
     def get_dnTP_counts(
         size_droplet_um:float=20,
@@ -60,9 +82,9 @@ class PCR(object):
         dict_ATCG_mM=None,
         
         """
-        volume_um3 = dp.calculate_volume(size=size_droplet_um, size_type=size_droplet_type)
-        volume_microliter = dp.convert_um3_to_ul(volume_um3)
-        num_dnTP_available = approximate_num_nt_from_dntp_mM(
+        volume_um3 = DropletSorter.calculate_volume(size=size_droplet_um, size_type=size_droplet_type)
+        volume_microliter = DropletSorter.convert_um3_to_ul(volume_um3)
+        num_dnTP_available = PCR.approximate_num_nt_from_dntp_mM(
         dnTP_mM=dnTP_mM, 
         volume_microliter=volume_microliter
         )
@@ -71,7 +93,7 @@ class PCR(object):
         if isinstance(dict_ATCG_mM, dict):
             Counter_ATCG_available = {}
             for k, dnTP_mM in dict_ATCG_mM.items():
-                Counter_ATCG_available[k] = approximate_num_nt_from_dntp_mM(
+                Counter_ATCG_available[k] = PCR.approximate_num_nt_from_dntp_mM(
                                                 dnTP_mM=dnTP_mM, 
                                                 volume_microliter=volume_microliter
                                             )
@@ -206,7 +228,7 @@ class PCR(object):
     def calculate_efficiencies_dntp(
         Counter_ATCG_initial,
         Counter_ATCG_available,
-    )->(Counter, float):
+    ):
 
         """
         Counter_ATCG_initial = Counter({'A': 200, 'T': 200, 'G': 200, 'C': 200})
