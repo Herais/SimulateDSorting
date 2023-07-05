@@ -331,9 +331,10 @@ class PCR(object):
 
         ret['efficiencies_dntp_curr'] = efficiencies_dntp
         ret['efficiencies_access_curr'] = efficiencies_access
-        ret['efficiencies_dntp_denature_curr'] = efficiencies_denature
+        ret['efficiencies_denature_curr'] = efficiencies_denature
         ret['efficiencies_anneal_curr'] = efficiencies_anneal
         ret['efficiencies_dntp_denature_curr'] = efficiencies_denature
+        ret['efficiencies_k_curr'] = efficiencies_k
 
         # load to pytorch tensor
         if use_tensor:
