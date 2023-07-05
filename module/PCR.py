@@ -352,9 +352,10 @@ class PCR(object):
         counter_ATCG_combined_curr = Counter()
         for counter_amplicon_ATCG, num_template in zip(counters_amplicon_ATCG, nums_template_produced_curr):
             counter_amplicon_ATCG_curr = Counter({k:v*num_template for k, v in counter_amplicon_ATCG.items()})
-            counter_ATCG_combined = counter_ATCG_combined + counter_amplicon_ATCG_curr
+            counter_ATCG_combined_curr = counter_ATCG_combined_curr + counter_amplicon_ATCG_curr
             counters_amplicon_ATCG_curr.append(counter_amplicon_ATCG_curr)
-
+        ret['counter_ATCG_combined_curr'] = counter_ATCG_combined_curr
+        
         counter_dnTP_at_end_of_cycle = counter_dnTP_at_start_of_cycle - counter_ATCG_combined_curr
         num_dnTP_left = len(counter_dnTP_at_end_of_cycle)
         if num_dnTP_left < 4:
