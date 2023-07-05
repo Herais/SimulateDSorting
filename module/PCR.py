@@ -280,6 +280,7 @@ class PCR(object):
         counter_dnTP_initial:collections.Counter,
         amplicons,
         efficiencies_dntp=None,
+        efficiencies_dntp_type='square',
         efficiencies_access=None,
         efficiencies_denature=None,
         efficiencies_anneal=None,
@@ -310,7 +311,10 @@ class PCR(object):
 
         if not np.any(efficiencies_dntp):
             assert len(counter_dnTP_at_start_of_cycle) == 4, 'At least one of the dnTPs has depleted'
-            dict_efficiencies_dntp = {k:counter_dnTP_at_start_of_cycle[k]/v for k, v in counter_dnTP_initial.items()}
+            if efficiencies_dntp_type == 'linear':
+                dict_efficiencies_dntp = {k:counter_dnTP_at_start_of_cycle[k]/v for k, v in counter_dnTP_initial.items()}
+            if efficiencies_dntp_type == 'square':
+                dict_efficiencies_dntp = {k:(counter_dnTP_at_start_of_cycle[k]/v)**2 for k, v in counter_dnTP_initial.items()}
             efficiencies_dntp = PCR.calculate_efficiencies_dntp_for_amplicons(counters_amplicon_ATCG, dict_efficiencies_dntp)
 
         if not np.any(efficiencies_access):
