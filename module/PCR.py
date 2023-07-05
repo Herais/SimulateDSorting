@@ -448,7 +448,12 @@ class PCR(object):
                             amplicons=amplicons,
                             t_denature_cycle=t_denature_cycle,
                             t_anneal_cycle=t_anneal_cycle,
+                            efficiencies_dntp=efficiencies_dntp,
                             efficiencies_dntp_type=efficiencies_dntp_type,
+                            efficiencies_access=efficiencies_access,
+                            efficiencies_denature=efficiencies_denature,
+                            efficiencies_anneal=efficiencies_anneal,
+                            efficiencies_k=efficiencies_k,
                         )
 
             ncycle2ret[n] = ret_cycle
