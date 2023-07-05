@@ -6,6 +6,7 @@ import pandas as pd
 import random
 from collections import Counter
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 import itertools
 
 #local libraries
@@ -385,20 +386,23 @@ class DropletSorter(object):
         bins=100,
         color='steelblue',
         figsize=(14,6),
+        ylim=None,
         return_df=False,
         ax=None,
     ):
         """
         """
 
+
+        df = df.copy()
+        range_f1 = df[colname_f1].max()-df[colname_f1].min()
+        a_bins = np.arange(df[colname_f1].min(), df[colname_f1].max(), range_f1/bins)
+        a_bins = np.append(a_bins, df[colname_f1].max())
         df['bin'] = pd.cut(df[colname_f1], 
-                            bins=np.arange(df[colname_f1].min(),
-                                           df[colname_f1].max(),
-                                           (df[colname_f1].max()-df[colname_f1].min())/(bins+1),
-                                          ),
-                            include_lowest=False,
+                            bins=a_bins,
+                            include_lowest=True,
                             )
-        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,bins+1)))
+        df['bin100'] = df['bin'].cat.rename_categories(list(range(1,len(df['bin'].cat.categories)+1)))
 
         df.groupby([colname_strain, 'bin100'])\
             .size()\
@@ -408,8 +412,148 @@ class DropletSorter(object):
                 figsize=figsize,
                 ax=ax,
                 color=color,
+                ylim=ylim,
             )
         plt.xticks(fontsize=8)
 
         if return_df:
             return df
+
+    @staticmethod
+    def df_to_dfbin_strains(
+        df,
+        colname_strain='sid',
+        colname_bin='bin100',
+    ):
+
+        # get unique strain/strain combo in each bin
+        dfbin = df.groupby([colname_strain, colname_bin])[colname_strain].nunique().rename('nunique_strain')
+
+        # demultiplex strain combo (droplets that encapsulated > 1 strains of cells)
+        dfbin = dfbin.reset_index()
+        dfbin[colname_strain] = dfbin[colname_strain].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
+        dfbin_strains = dfbin[colname_strain].apply(';'.join).str.split(';', expand=True)
+        dfbin_strains[[colname_bin, 'nunique_strain']] = dfbin[[colname_bin, 'nunique_strain']]
+        dfbin_strains = dfbin_strains.melt(id_vars=[colname_bin, 'nunique_strain'],
+                                        var_name='id_strain_in_droplet',
+                                        value_name=colname_strain
+                                        )
+
+        return dfbin_strains
+
+    @staticmethod 
+    def plot_histogram_highlighting_strains(
+        df,
+        colname_f1='sum_mCherry-A',
+        colname_strain='sid',
+        bins=100,
+        figsize=(24,8),
+        height_ratios=(4,1),
+        color=None, #palette12
+        ylim=None,
+        font_size='x-small',
+        remove_legend=False,
+    ):
+        df = df.copy()
+        ret = {}
+
+        fig, axes = plt.subplots(2, 1, 
+                                 sharex=True, 
+                                 figsize=figsize, 
+                                 gridspec_kw={'height_ratios': height_ratios})
+
+        # plot histogram, color coding different strains
+        df =DropletSorter.barplot_histogram(
+            df=df,
+            colname_f1=colname_f1,
+            colname_strain=colname_strain,
+            bins=bins,
+            return_df=True,
+            ax=axes[0],
+            ylim=ylim,
+            color=color)
+        
+        fontP = FontProperties()
+        fontP.set_size(font_size) #'x-small' 'xx-small'
+        axes[0].legend(loc=0, 
+                       ncol=1,
+                       bbox_to_anchor=(0, 0, 1, 1),
+                       prop = fontP,
+                       fancybox=True,
+                       shadow=False,
+                       title='LEGEND'
+                      )
+        
+        if remove_legend:
+            axes[0].get_legend().remove()
+
+        #
+        dfbin_strains = DropletSorter.df_to_dfbin_strains(df, colname_strain=colname_strain)
+        dfbin_strains.groupby([colname_strain, 'bin100'])['nunique_strain'].sum().unstack(0).plot.bar(
+            stacked=True, ax=axes[1], color=color)
+        axes[1].get_legend().remove()
+        axes[1].set_ylim([0,12])
+
+        ret['fig'] = fig
+        ret['axes'] = axes
+        ret['df'] = df
+        ret['dfbin_strains'] = dfbin_strains
+
+        return ret
+    
+    @staticmethod
+    def plot_histogram_strains_individual(
+        df,
+        ls_sid,
+        ls_color,
+        colname_strain='sid',
+        bins=100,
+        figsize=(12,6),
+        height_ratios=None,
+        nrows=4,
+        ncols=3,
+        ylim=(0,2600),
+        fontsize=10,
+        size_title=8,
+    ):
+        """
+        """
+        df = df.copy()
+        # wraps 'sid' in a tuple if it's a string
+        df[colname_strain] = df[colname_strain].apply(lambda x: tuple([x]) if isinstance(x, str) else x)
+
+        ret = {}
+        fig, axes = plt.subplots(
+                            nrows, 
+                            ncols,
+                            figsize=figsize,
+                            sharex=True,
+                            sharey=True,
+                            gridspec_kw={'height_ratios': height_ratios}
+                        )
+
+        r = -1
+        c = 0
+
+        for i, sid in enumerate(sorted(ls_sid)):
+            if i % ncols == 0:
+                c = 0
+                r += 1
+            dfstrain = df[df[colname_strain].apply(lambda x: x[0]) == sid]
+            #print(r, c)
+            dfstrain.groupby(['bin100'])['bin100'].count().plot.bar(
+                ax=axes[r][c], 
+                title=sid, 
+                fontsize=fontsize, 
+                color=ls_color[i],
+                ylim=ylim,
+            )
+            axes[r][c].title.set_size(size_title)
+            axes[r][c].set_xticks(np.arange(-1,bins+1,25))
+            c += 1
+
+        ret['fig'] = fig
+        ret['axes'] = axes
+        ret['dfstrain'] = dfstrain
+
+        return ret
