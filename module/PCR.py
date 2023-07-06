@@ -474,6 +474,38 @@ class PCR(object):
         return np.transpose(np.meshgrid(*arrays, indexing='ij'),
                         np.roll(np.arange(N + 1), -1)).reshape(-1, N)
 
+    @staticmethod
+    def compartmentalize_bulk_to_drops(
+            nums_template_amplicon,
+            n_droplets,
+            V_total_ul,
+            Ws_dropids=None,
+        ):
+        """
+        """
+        ret = {}
+        aid2dropids = {}
+        dropid_to_aid2count = {}
+
+        for aid, num_template_amplicon in enumerate(nums_template_amplicon):
+            if np.any(Ws_dropids):
+                a=list(range(n_droplets))
+                aid2dropids[aid] = np.random.choice(a, size=num_template_amplicon, p=Ws_dropids)
+            else:
+                aid2dropids[aid] = np.random.randint(low=0, high=n_droplets, size=num_template_amplicon, dtype=int)
+            for dropid in aid2dropids[aid]:
+                if dropid not in dropid_to_aid2count:
+                    dropid_to_aid2count[dropid] = {}
+                if aid not in dropid_to_aid2count[dropid]:
+                    dropid_to_aid2count[dropid][aid] = 1
+                else:
+                    dropid_to_aid2count[dropid][aid] += 1
+
+        ret['aid2dropids'] = aid2dropids
+        ret['dropid_to_aid2count'] = dropid_to_aid2count
+
+        return ret
+
 
 class Polymerase(object):
  
